@@ -1,0 +1,132 @@
+{
+  "description": "Druid and wizard group/self port destinations from the Project 1999 Travel Guide.",
+  "druid": [
+    {
+      "spell": "Circle of Butcher",
+      "zone": "Butcherblock Mountains"
+    },
+    {
+      "spell": "Circle of Karana",
+      "zone": "North Karana"
+    },
+    {
+      "spell": "Circle of Toxxulia",
+      "zone": "Toxxulia Forest"
+    },
+    {
+      "spell": "Circle of Commons",
+      "zone": "West Commonlands"
+    },
+    {
+      "spell": "Circle of Surefall Glade",
+      "zone": "Surefall Glade"
+    },
+    {
+      "spell": "Circle of Feerrott",
+      "zone": "The Feerrott"
+    },
+    {
+      "spell": "Circle of Lavastorm",
+      "zone": "Lavastorm Mountains"
+    },
+    {
+      "spell": "Circle of Ro",
+      "zone": "Southern Desert of Ro"
+    },
+    {
+      "spell": "Circle of Steamfont",
+      "zone": "Steamfont Mountains"
+    },
+    {
+      "spell": "Circle of Misty",
+      "zone": "Misty Thicket"
+    },
+    {
+      "spell": "Circle of the Combines",
+      "zone": "Dreadlands"
+    },
+    {
+      "spell": "Wind of the South",
+      "zone": "Emerald Jungle"
+    },
+    {
+      "spell": "Wind of the North",
+      "zone": "Skyfire Mountains"
+    },
+    {
+      "spell": "Circle of Iceclad",
+      "zone": "Iceclad Ocean"
+    },
+    {
+      "spell": "Circle of Great Divide",
+      "zone": "Great Divide"
+    },
+    {
+      "spell": "Circle of Cobalt Scar",
+      "zone": "Cobalt Scar"
+    },
+    {
+      "spell": "Circle of Wakening Lands",
+      "zone": "Wakening Land"
+    }
+  ],
+  "sources": [
+    "https://wiki.project1999.com/Travel_Guide",
+    "https://wiki.project1999.com/Druid/Spell_Lines",
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+  ],
+  "wizard": [
+    {
+      "spell": "Fay Portal",
+      "zone": "Greater Faydark"
+    },
+    {
+      "spell": "North Portal",
+      "zone": "North Karana"
+    },
+    {
+      "spell": "Tox Portal",
+      "zone": "Toxxulia Forest"
+    },
+    {
+      "spell": "Cazic Portal",
+      "zone": "Cazic Thule"
+    },
+    {
+      "spell": "Combine Portal",
+      "zone": "Dreadlands"
+    },
+    {
+      "spell": "Common Portal",
+      "zone": "West Commonlands"
+    },
+    {
+      "spell": "Nek Portal",
+      "zone": "Nektulos Forest"
+    },
+    {
+      "spell": "Ro Portal",
+      "zone": "Northern Desert of Ro"
+    },
+    {
+      "spell": "West Portal",
+      "zone": "West Karana"
+    },
+    {
+      "spell": "Iceclad Portal",
+      "zone": "Iceclad Ocean"
+    },
+    {
+      "spell": "Great Divide Portal",
+      "zone": "Great Divide"
+    },
+    {
+      "spell": "Cobalt Scar Portal",
+      "zone": "Cobalt Scar"
+    },
+    {
+      "spell": "Wakening Lands Portal",
+      "zone": "Wakening Land"
+    }
+  ]
+}

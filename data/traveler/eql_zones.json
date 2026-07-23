@@ -1,0 +1,1318 @@
+{
+  "allowed_zones": [
+    "Ak'Anon",
+    "Befallen",
+    "Blackburrow",
+    "Butcherblock Mountains",
+    "Castle Mistmoore",
+    "Cazic Thule",
+    "Crushbone",
+    "Dagnor's Cauldron",
+    "East Commonlands",
+    "East Freeport",
+    "East Karana",
+    "Erud's Crossing",
+    "Erudin",
+    "Erudin Docks",
+    "Erudin Palace",
+    "Estate of Unrest",
+    "Everfrost Peaks",
+    "Gorge of King Xorbb",
+    "Greater Faydark",
+    "Grobb",
+    "Halas",
+    "Highpass Hold",
+    "Highpass Keep",
+    "Innothule Swamp",
+    "Kedge Keep",
+    "Kerra Isle",
+    "Kithicor Forest",
+    "Lake Rathetear",
+    "Lavastorm Mountains",
+    "Lesser Faydark",
+    "Lower Guk",
+    "Misty Thicket",
+    "Nagafen's Lair",
+    "Najena",
+    "Nektulos Forest",
+    "Neriak Commons",
+    "Neriak Foreign Quarter",
+    "Neriak Third Gate",
+    "North Felwithe",
+    "North Freeport",
+    "North Kaladim",
+    "North Karana",
+    "North Qeynos",
+    "Northern Desert of Ro",
+    "Oasis of Marr",
+    "Ocean of Tears",
+    "Oggok",
+    "Paineel",
+    "Permafrost Keep",
+    "Plane of Fear",
+    "Plane of Hate",
+    "Plane of Sky",
+    "Qeynos Catacombs",
+    "Qeynos Hills",
+    "Rathe Mountains",
+    "Rivervale",
+    "Runnyeye Citadel",
+    "Solusek's Eye",
+    "South Felwithe",
+    "South Kaladim",
+    "South Karana",
+    "South Qeynos",
+    "Southern Desert of Ro",
+    "Splitpaw Lair",
+    "Steamfont Mountains",
+    "Stonebrunt Mtns.",
+    "Surefall Glade",
+    "Temple of Sol. Ro",
+    "The Arena",
+    "The Feerrott",
+    "The Hole",
+    "The Warrens",
+    "Toxxulia Forest",
+    "Upper Guk",
+    "West Commonlands",
+    "West Freeport",
+    "West Karana"
+  ],
+  "allowed_zones_by_era": {
+    "classic": [
+      "Ak'Anon",
+      "Befallen",
+      "Blackburrow",
+      "Butcherblock Mountains",
+      "Castle Mistmoore",
+      "Cazic Thule",
+      "Crushbone",
+      "Dagnor's Cauldron",
+      "East Commonlands",
+      "East Freeport",
+      "East Karana",
+      "Erud's Crossing",
+      "Erudin",
+      "Erudin Docks",
+      "Erudin Palace",
+      "Estate of Unrest",
+      "Everfrost Peaks",
+      "Gorge of King Xorbb",
+      "Greater Faydark",
+      "Grobb",
+      "Halas",
+      "Highpass Hold",
+      "Highpass Keep",
+      "Innothule Swamp",
+      "Kedge Keep",
+      "Kerra Isle",
+      "Kithicor Forest",
+      "Lake Rathetear",
+      "Lavastorm Mountains",
+      "Lesser Faydark",
+      "Lower Guk",
+      "Misty Thicket",
+      "Nagafen's Lair",
+      "Najena",
+      "Nektulos Forest",
+      "Neriak Commons",
+      "Neriak Foreign Quarter",
+      "Neriak Third Gate",
+      "North Felwithe",
+      "North Freeport",
+      "North Kaladim",
+      "North Karana",
+      "North Qeynos",
+      "Northern Desert of Ro",
+      "Oasis of Marr",
+      "Ocean of Tears",
+      "Oggok",
+      "Paineel",
+      "Permafrost Keep",
+      "Plane of Fear",
+      "Plane of Hate",
+      "Plane of Sky",
+      "Qeynos Catacombs",
+      "Qeynos Hills",
+      "Rathe Mountains",
+      "Rivervale",
+      "Runnyeye Citadel",
+      "Solusek's Eye",
+      "South Felwithe",
+      "South Kaladim",
+      "South Karana",
+      "South Qeynos",
+      "Southern Desert of Ro",
+      "Splitpaw Lair",
+      "Steamfont Mountains",
+      "Stonebrunt Mtns.",
+      "Surefall Glade",
+      "Temple of Sol. Ro",
+      "The Arena",
+      "The Feerrott",
+      "The Hole",
+      "The Warrens",
+      "Toxxulia Forest",
+      "Upper Guk",
+      "West Commonlands",
+      "West Freeport",
+      "West Karana"
+    ],
+    "kunark": [
+      "Burning Wood",
+      "Charasis (H. Stones)",
+      "Chardok",
+      "City of Mist",
+      "Crypt of Dalnir",
+      "Dreadlands",
+      "East Cabilis",
+      "Emerald Jungle",
+      "Field of Bone",
+      "Firiona Vie",
+      "Frontier Mountains",
+      "Kaesora",
+      "Karnor's Castle",
+      "Kurn's Tower",
+      "Lake of Ill Omen",
+      "Mines of Nurga",
+      "Old Sebilis",
+      "Overthere",
+      "Skyfire Mountains",
+      "Swamp of No Hope",
+      "Temple of Droga",
+      "Timorous Deep",
+      "Trakanon's Teeth",
+      "Veeshan's Peak",
+      "Warsliks Woods",
+      "West Cabilis"
+    ],
+    "velious": [
+      "Cobalt Scar",
+      "Crystal Cavern",
+      "Dragon Necropolis",
+      "Eastern Wastes",
+      "Great Divide",
+      "Iceclad Ocean",
+      "Icewell Keep",
+      "Kael Drakkal",
+      "Plane of Growth",
+      "Plane of Mischief",
+      "Siren's Grotto",
+      "Skyshrine",
+      "Sleeper's Tomb",
+      "Temple of Veeshan",
+      "Thurgadin",
+      "Tower of Frozen Shadow",
+      "Velketor's Labyrinth",
+      "Wakening Land",
+      "Western Wastes"
+    ]
+  },
+  "default_era": "classic",
+  "destinations": [
+    {
+      "category": "city",
+      "continent": "odus",
+      "era": "classic",
+      "label": "Erudin",
+      "nodes": [
+        "Erudin",
+        "Erudin Docks",
+        "Erudin Palace"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "odus",
+      "era": "classic",
+      "label": "Kerra Island",
+      "nodes": [
+        "Kerra Isle"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "odus",
+      "era": "classic",
+      "label": "Paineel",
+      "nodes": [
+        "Paineel"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "odus",
+      "era": "classic",
+      "label": "Erud's Crossing",
+      "nodes": [
+        "Erud's Crossing"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "odus",
+      "era": "classic",
+      "label": "Stonebrunt Mountains",
+      "nodes": [
+        "Stonebrunt Mtns."
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "odus",
+      "era": "classic",
+      "label": "The Hole",
+      "nodes": [
+        "The Hole"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "odus",
+      "era": "classic",
+      "label": "The Warrens",
+      "nodes": [
+        "The Warrens"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "odus",
+      "era": "classic",
+      "label": "Toxxulia Forest",
+      "nodes": [
+        "Toxxulia Forest"
+      ]
+    },
+    {
+      "category": "plane",
+      "continent": "planes",
+      "era": "classic",
+      "label": "Plane of Fear",
+      "nodes": [
+        "Plane of Fear"
+      ]
+    },
+    {
+      "category": "plane",
+      "continent": "planes",
+      "era": "classic",
+      "label": "Plane of Hate",
+      "nodes": [
+        "Plane of Hate"
+      ]
+    },
+    {
+      "category": "plane",
+      "continent": "planes",
+      "era": "classic",
+      "label": "Plane of Sky",
+      "nodes": [
+        "Plane of Sky"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Freeport",
+      "nodes": [
+        "East Freeport",
+        "North Freeport",
+        "West Freeport"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Grobb",
+      "nodes": [
+        "Grobb"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Halas",
+      "nodes": [
+        "Halas"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "New Sebilis Expedition",
+      "nodes": []
+    },
+    {
+      "category": "city",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Neriak",
+      "nodes": [
+        "Neriak Commons",
+        "Neriak Foreign Quarter",
+        "Neriak Third Gate"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Oggok",
+      "nodes": [
+        "Oggok"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Qeynos",
+      "nodes": [
+        "North Qeynos",
+        "South Qeynos"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Rivervale",
+      "nodes": [
+        "Rivervale"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Surefall Glade",
+      "nodes": [
+        "Surefall Glade"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Befallen",
+      "nodes": [
+        "Befallen"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Blackburrow",
+      "nodes": [
+        "Blackburrow"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Cazic Thule",
+      "nodes": [
+        "Cazic Thule"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "East Commonlands",
+      "nodes": [
+        "East Commonlands"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "West Commonlands",
+      "nodes": [
+        "West Commonlands"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Everfrost Peaks",
+      "nodes": [
+        "Everfrost Peaks"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "The Feerrott",
+      "nodes": [
+        "The Feerrott"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Gorge of King Xorbb",
+      "nodes": [
+        "Gorge of King Xorbb"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Highpass Hold",
+      "nodes": [
+        "Highpass Hold"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "High Keep",
+      "nodes": [
+        "Highpass Keep"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Innothule Swamp",
+      "nodes": [
+        "Innothule Swamp"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "East Karana",
+      "nodes": [
+        "East Karana"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "North Karana",
+      "nodes": [
+        "North Karana"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "West Karana",
+      "nodes": [
+        "West Karana"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "South Karana",
+      "nodes": [
+        "South Karana"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Kithicor Forest",
+      "nodes": [
+        "Kithicor Forest"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Lake Rathetear",
+      "nodes": [
+        "Lake Rathetear"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Lavastorm Mountains",
+      "nodes": [
+        "Lavastorm Mountains"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Upper Guk",
+      "nodes": [
+        "Upper Guk"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Lower Guk",
+      "nodes": [
+        "Lower Guk"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Misty Thicket",
+      "nodes": [
+        "Misty Thicket"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Nagafen's Lair",
+      "nodes": [
+        "Nagafen's Lair"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Solusek's Eye",
+      "nodes": [
+        "Solusek's Eye"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Najena",
+      "nodes": [
+        "Najena"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Nektulos Forest",
+      "nodes": [
+        "Nektulos Forest"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Ocean of Tears",
+      "nodes": [
+        "Ocean of Tears"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Permafrost",
+      "nodes": [
+        "Permafrost Keep"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Qeynos Aqueducts",
+      "nodes": [
+        "Qeynos Catacombs"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Qeynos Hills",
+      "nodes": [
+        "Qeynos Hills"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Rathe Mountains",
+      "nodes": [
+        "Rathe Mountains"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "North Ro",
+      "nodes": [
+        "Northern Desert of Ro"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Oasis of Marr",
+      "nodes": [
+        "Oasis of Marr"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "South Ro",
+      "nodes": [
+        "Southern Desert of Ro"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Runnyeye Citadel",
+      "nodes": [
+        "Runnyeye Citadel"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Splitpaw Lair",
+      "nodes": [
+        "Splitpaw Lair"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "The Temple of Solusek Ro",
+      "nodes": [
+        "Temple of Sol. Ro"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "The Arena",
+      "nodes": [
+        "The Arena"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "antonica",
+      "era": "classic",
+      "label": "Tutorial Zone",
+      "nodes": []
+    },
+    {
+      "category": "city",
+      "continent": "faydwer",
+      "era": "classic",
+      "label": "Ak'Anon",
+      "nodes": [
+        "Ak'Anon"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "faydwer",
+      "era": "classic",
+      "label": "Felwithe",
+      "nodes": [
+        "North Felwithe",
+        "South Felwithe"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "faydwer",
+      "era": "classic",
+      "label": "Kaladim",
+      "nodes": [
+        "North Kaladim",
+        "South Kaladim"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "faydwer",
+      "era": "classic",
+      "label": "Kelethin (Greater Faydark)",
+      "nodes": [
+        "Greater Faydark"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "faydwer",
+      "era": "classic",
+      "label": "Butcherblock Mountains",
+      "nodes": [
+        "Butcherblock Mountains"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "faydwer",
+      "era": "classic",
+      "label": "Crushbone",
+      "nodes": [
+        "Crushbone"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "faydwer",
+      "era": "classic",
+      "label": "Dagnor's Cauldron",
+      "nodes": [
+        "Dagnor's Cauldron"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "faydwer",
+      "era": "classic",
+      "label": "Kedge Keep",
+      "nodes": [
+        "Kedge Keep"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "faydwer",
+      "era": "classic",
+      "label": "Lesser Faydark",
+      "nodes": [
+        "Lesser Faydark"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "faydwer",
+      "era": "classic",
+      "label": "Mistmoore Castle",
+      "nodes": [
+        "Castle Mistmoore"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "faydwer",
+      "era": "classic",
+      "label": "Steamfont Mountains",
+      "nodes": [
+        "Steamfont Mountains"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "faydwer",
+      "era": "classic",
+      "label": "The Estate of Unrest",
+      "nodes": [
+        "Estate of Unrest"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "East Cabilis",
+      "nodes": [
+        "East Cabilis"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "West Cabilis",
+      "nodes": [
+        "West Cabilis"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Burning Wood",
+      "nodes": [
+        "Burning Wood"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Dreadlands",
+      "nodes": [
+        "Dreadlands"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Emerald Jungle",
+      "nodes": [
+        "Emerald Jungle"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Field of Bone",
+      "nodes": [
+        "Field of Bone"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Firiona Vie",
+      "nodes": [
+        "Firiona Vie"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Frontier Mountains",
+      "nodes": [
+        "Frontier Mountains"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Lake of Ill Omen",
+      "nodes": [
+        "Lake of Ill Omen"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Overthere",
+      "nodes": [
+        "Overthere"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Skyfire Mountains",
+      "nodes": [
+        "Skyfire Mountains"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Swamp of No Hope",
+      "nodes": [
+        "Swamp of No Hope"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Timorous Deep",
+      "nodes": [
+        "Timorous Deep"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Trakanon's Teeth",
+      "nodes": [
+        "Trakanon's Teeth"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Warsliks Woods",
+      "nodes": [
+        "Warsliks Woods"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Chardok",
+      "nodes": [
+        "Chardok"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "City of Mist",
+      "nodes": [
+        "City of Mist"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Howling Stones",
+      "nodes": [
+        "Charasis (H. Stones)"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Kaesora",
+      "nodes": [
+        "Kaesora"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Karnor's Castle",
+      "nodes": [
+        "Karnor's Castle"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Kurn's Tower",
+      "nodes": [
+        "Kurn's Tower"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Mines of Nurga",
+      "nodes": [
+        "Mines of Nurga"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Old Sebilis",
+      "nodes": [
+        "Old Sebilis"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Temple of Droga",
+      "nodes": [
+        "Temple of Droga"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Veeshan's Peak",
+      "nodes": [
+        "Veeshan's Peak"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "kunark",
+      "era": "kunark",
+      "label": "Crypt of Dalnir",
+      "nodes": [
+        "Crypt of Dalnir"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Icewell Keep",
+      "nodes": [
+        "Icewell Keep"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Kael Drakkal",
+      "nodes": [
+        "Kael Drakkal"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Skyshrine",
+      "nodes": [
+        "Skyshrine"
+      ]
+    },
+    {
+      "category": "city",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Thurgadin",
+      "nodes": [
+        "Thurgadin"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Cobalt Scar",
+      "nodes": [
+        "Cobalt Scar"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Eastern Wastes",
+      "nodes": [
+        "Eastern Wastes"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Great Divide",
+      "nodes": [
+        "Great Divide"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Iceclad Ocean",
+      "nodes": [
+        "Iceclad Ocean"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Wakening Land",
+      "nodes": [
+        "Wakening Land"
+      ]
+    },
+    {
+      "category": "outdoor",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Western Wastes",
+      "nodes": [
+        "Western Wastes"
+      ]
+    },
+    {
+      "category": "plane",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Plane of Growth",
+      "nodes": [
+        "Plane of Growth"
+      ]
+    },
+    {
+      "category": "plane",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Plane of Mischief",
+      "nodes": [
+        "Plane of Mischief"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Crystal Cavern",
+      "nodes": [
+        "Crystal Cavern"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Dragon Necropolis",
+      "nodes": [
+        "Dragon Necropolis"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Siren's Grotto",
+      "nodes": [
+        "Siren's Grotto"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Sleeper's Tomb",
+      "nodes": [
+        "Sleeper's Tomb"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Temple of Veeshan",
+      "nodes": [
+        "Temple of Veeshan"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Tower of Frozen Shadow",
+      "nodes": [
+        "Tower of Frozen Shadow"
+      ]
+    },
+    {
+      "category": "dungeon",
+      "continent": "velious",
+      "era": "velious",
+      "label": "Velketor's Labyrinth",
+      "nodes": [
+        "Velketor's Labyrinth"
+      ]
+    }
+  ],
+  "eras": [
+    "classic",
+    "kunark",
+    "velious"
+  ],
+  "fetched_at": "2026-07-11",
+  "notes": "Zone picker and routing are filtered by expansion era. Classic is the default; Kunark and Velious are marked out-of-era on EQL.",
+  "pending_zones": [
+    "New Sebilis Expedition",
+    "Tutorial Zone"
+  ],
+  "pending_zones_by_era": {
+    "classic": [
+      "New Sebilis Expedition",
+      "Tutorial Zone"
+    ],
+    "kunark": [],
+    "velious": []
+  },
+  "search_aliases": {
+    "Greater Faydark": "Kelethin (Greater Faydark)",
+    "Guk": "Upper Guk",
+    "High Keep": "High Keep",
+    "Highpass Keep": "High Keep",
+    "Kelethin": "Kelethin (Greater Faydark)",
+    "Kerra Isle": "Kerra Island",
+    "Kithicor Woods": "Kithicor Forest",
+    "Northern Desert of Ro": "North Ro",
+    "Ruins of Old Guk": "Lower Guk",
+    "Runnyeye": "Runnyeye Citadel",
+    "Sol A": "Solusek's Eye",
+    "Sol B": "Nagafen's Lair",
+    "Southern Desert of Ro": "South Ro"
+  },
+  "search_aliases_by_era": {
+    "classic": {
+      "Greater Faydark": "Kelethin (Greater Faydark)",
+      "Guk": "Upper Guk",
+      "High Keep": "High Keep",
+      "Highpass Keep": "High Keep",
+      "Kelethin": "Kelethin (Greater Faydark)",
+      "Kerra Isle": "Kerra Island",
+      "Kithicor Woods": "Kithicor Forest",
+      "Northern Desert of Ro": "North Ro",
+      "Ruins of Old Guk": "Lower Guk",
+      "Runnyeye": "Runnyeye Citadel",
+      "Sol A": "Solusek's Eye",
+      "Sol B": "Nagafen's Lair",
+      "Southern Desert of Ro": "South Ro"
+    },
+    "kunark": {
+      "Cabilis": "East Cabilis",
+      "Charasis": "Howling Stones",
+      "Dalnir": "Crypt of Dalnir",
+      "Howling Stones (Charasis)": "Howling Stones",
+      "The Overthere": "Overthere"
+    },
+    "velious": {
+      "City of Thurgadin": "Thurgadin",
+      "Crystal Caverns": "Crystal Cavern",
+      "The Great Divide": "Great Divide"
+    }
+  },
+  "source": "https://eqlwiki.com/Zones"
+}

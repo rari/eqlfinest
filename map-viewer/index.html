@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- hi from Rari - made this for personal use, but now you can use it too! -->
+<head>
+  <meta charset="UTF-8">
+  
+  <script src="/eqlfinest/assets/js/site-return.js?v=f9cbfb41176a"></script>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070b12">
+  
+  <meta name="robots" content="index,follow">
+  
+  
+  <meta name="description" content="View and edit EverQuest Legends zone maps: label layers, search, export files, or render an image.">
+  
+  <meta name="author" content="Rari">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; img-src 'self' data: blob:; font-src 'self'; style-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; child-src 'self' blob:">
+  <link rel="icon" href="/eqlfinest/favicon.ico">
+  <link rel="apple-touch-icon" href="/eqlfinest/assets/img/apple-touch-icon.png">
+  
+  <meta property="og:site_name" content="Antonica’s Finest">
+  <meta property="og:title" content="Map Viewer | Antonica’s Finest">
+  <meta property="og:description" content="View and edit zone maps offline.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rari.github.io/eqlfinest/map-viewer/">
+  
+  <meta property="og:image" content="https://rari.github.io/eqlfinest/assets/img/og/map-viewer.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Map Viewer — view and edit zone maps offline">
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Map Viewer | Antonica’s Finest">
+  <meta name="twitter:description" content="View and edit zone maps offline.">
+  
+  <meta name="twitter:image" content="https://rari.github.io/eqlfinest/assets/img/og/map-viewer.jpg">
+  <meta name="twitter:image:alt" content="Map Viewer — view and edit zone maps offline">
+  
+  
+  <title>Map Viewer | Antonica’s Finest</title>
+  
+  <link rel="canonical" href="https://rari.github.io/eqlfinest/map-viewer/">
+  
+  <link rel="preload" href="/eqlfinest/assets/fonts/cinzel-500.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/eqlfinest/assets/fonts/cinzel-700.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/eqlfinest/assets/fonts/source-sans-3-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/eqlfinest/assets/img/hero-texture.webp" as="image" type="image/webp" fetchpriority="high">
+  
+  <link rel="stylesheet" href="/eqlfinest/assets/css/site.css?v=f9cbfb41176a">
+  
+  <link rel="stylesheet" href="/eqlfinest/assets/css/tools/map-viewer.css?v=f9cbfb41176a">
+  
+  
+  
+  
+  
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Map Viewer",
+  "url": "https://rari.github.io/eqlfinest/map-viewer/",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Antonica’s Finest",
+    "url": "https://rari.github.io/eqlfinest/"
+  },
+  "description": "View and edit EverQuest Legends zone maps and label layers in the browser.",
+  "author": { "@type": "Person", "name": "Rari" },
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+
+  </script>
+  
+  
+</head>
+<body class="has-site-header" data-base="/eqlfinest/" data-build="f9cbfb41176a" data-nav="map-viewer">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <nav class="site-nav" aria-label="Quick tools">
+        
+        <a class="site-nav-link" href="/eqlfinest/traveler/">Travel Guide</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/map-viewer/" aria-current="page">Map Viewer</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/loot-filter/">Loot Filter</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/spell-bars/">Spell Bars</a>
+        
+      </nav>
+    </div>
+  </header>
+
+  <div class="stars" aria-hidden="true"></div>
+
+<main id="main">
+  <div class="hero">
+    <img class="hero-texture" src="/eqlfinest/assets/img/hero-texture.webp" alt="" width="1920" height="1080" decoding="async" fetchpriority="high" aria-hidden="true">
+    <div class="hero-veil" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <a class="brand" href="/eqlfinest/">Antonica’s Finest</a>
+      <h1>Map Viewer</h1>
+      <p class="subtitle">View and edit zone maps offline</p>
+    </div>
+  </div>
+
+  <div class="shell map-shell">
+
+    <section class="upload-panel" id="upload-panel">
+      <div class="upload-drop" id="upload-drop" role="region" aria-label="Map files drop zone">
+        <input id="upload-input" type="file" accept=".txt,text/plain" multiple hidden>
+        <div class="upload-orb" aria-hidden="true">
+          <span class="upload-orb-ring"></span>
+          <span class="upload-orb-glyph">✦</span>
+        </div>
+        <strong class="upload-title">Drop map files here</strong>
+        <span class="upload-hint">
+          Base <code>&lt;zone&gt;.txt</code> required · optional <code>_1</code>, <code>_2</code>, <code>_3</code>
+        </span>
+        <p class="tool-privacy">Your map files stay in this browser. Nothing is uploaded.</p>
+        <div class="upload-actions">
+          <button type="button" class="upload-btn" id="upload-btn">Choose files</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel map-toolbar" aria-labelledby="map-toolbar-heading">
+      <h2 id="map-toolbar-heading" class="toolbar-heading">Map management</h2>
+      <div class="map-toolbar-main">
+        <input
+          type="text"
+          id="map-name"
+          class="map-name-input"
+          placeholder="zone_short_name"
+          autocomplete="off"
+          aria-label="Map name"
+        >
+        <button type="button" class="download-btn toolbar-btn" id="download-btn" disabled>
+          <span>Download zip</span>
+          <span class="download-icon" aria-hidden="true">↓</span>
+        </button>
+        <button type="button" class="secondary-btn toolbar-btn render-btn" id="render-btn" disabled>
+          <span>Render</span>
+          <span class="render-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+              <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.75"/>
+              <circle cx="8.5" cy="10" r="1.75" fill="currentColor"/>
+              <path d="M3 16l5.5-5.5 4 4 3-3L21 17" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+      <p class="upload-hint toolbar-eyelash">Same base name for all layers · drop a new set anytime to replace</p>
+    </section>
+
+    <section class="map-workspace">
+      <aside class="panel map-sidebar">
+        <details class="sidebar-section" data-section="navigation" open>
+          <summary class="section-heading">Navigation</summary>
+          <div class="section-body">
+            <div class="btn-row">
+              <button type="button" class="tool-btn active" data-tool="pan" aria-pressed="true">Pan / Select</button>
+            </div>
+            <div class="btn-row">
+              <button type="button" class="secondary-btn icon-btn" id="zoom-in" title="Zoom in" aria-label="Zoom in">+</button>
+              <button type="button" class="secondary-btn icon-btn" id="zoom-out" title="Zoom out" aria-label="Zoom out">−</button>
+              <button type="button" class="secondary-btn" id="zoom-fit">Center</button>
+            </div>
+            <div class="btn-row">
+              <button type="button" class="secondary-btn" id="bg-toggle">Background: Light</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="sidebar-section" data-section="layers">
+          <summary class="section-heading">Layers</summary>
+          <div class="section-body">
+            <span class="subsection-label">Visible</span>
+            <div class="layer-buttons" role="group" aria-label="Visible layers">
+              <button type="button" class="layer-btn active" data-vis="base" aria-pressed="true">Base</button>
+              <button type="button" class="layer-btn active" data-vis="1" aria-pressed="true">1</button>
+              <button type="button" class="layer-btn active" data-vis="2" aria-pressed="true">2</button>
+              <button type="button" class="layer-btn active" data-vis="3" aria-pressed="true">3</button>
+            </div>
+            <span class="subsection-label">Active</span>
+            <div class="layer-buttons" role="group" aria-label="Active layer">
+              <button type="button" class="layer-btn active" data-layer="base" aria-pressed="true">Base</button>
+              <button type="button" class="layer-btn" data-layer="1" aria-pressed="false">1</button>
+              <button type="button" class="layer-btn" data-layer="2" aria-pressed="false">2</button>
+              <button type="button" class="layer-btn" data-layer="3" aria-pressed="false">3</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="sidebar-section" data-section="lines">
+          <summary class="section-heading">Lines</summary>
+          <div class="section-body">
+            <label class="color-row" for="line-color">
+              <span class="field-label">New line color</span>
+              <input type="color" id="line-color" value="#000000">
+            </label>
+            <div class="btn-row">
+              <button type="button" class="layer-btn active" id="join-intersect" aria-pressed="true">Join at intersect</button>
+            </div>
+            <div class="btn-grid">
+              <button type="button" class="tool-btn" data-tool="line" aria-pressed="false">Add line</button>
+              <button type="button" class="secondary-btn" id="end-line-btn">End line</button>
+              <button type="button" class="secondary-btn" id="remove-line-btn" disabled>Remove</button>
+              <button type="button" class="secondary-btn" id="recolor-line-btn" disabled>Recolor</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="sidebar-section" data-section="labels">
+          <summary class="section-heading">Labels</summary>
+          <div class="section-body">
+            <label class="color-row" for="label-color">
+              <span class="field-label">New label color</span>
+              <input type="color" id="label-color" value="#800000">
+            </label>
+            <label class="field compact-field" for="label-text">
+              <span class="field-label">Label text</span>
+              <input type="text" id="label-text" placeholder="Zone_In/Out" autocomplete="off">
+            </label>
+            <div class="btn-grid">
+              <button type="button" class="tool-btn" data-tool="label" aria-pressed="false">Add label</button>
+              <button type="button" class="secondary-btn" id="apply-label-btn" disabled>Apply text</button>
+              <button type="button" class="secondary-btn" id="remove-label-btn" disabled>Remove</button>
+              <button type="button" class="secondary-btn" id="recolor-label-btn" disabled>Recolor</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="sidebar-section" data-section="move-label">
+          <summary class="section-heading">Move label</summary>
+          <div class="section-body">
+            <div class="btn-row">
+              <button type="button" class="tool-btn" data-tool="move-label" aria-pressed="false">Drag to move</button>
+            </div>
+            <span class="subsection-label">Move to layer</span>
+            <div class="layer-buttons" role="group" aria-label="Move label to layer">
+              <button type="button" class="secondary-btn move-layer-btn" data-move-layer="base" disabled>Base</button>
+              <button type="button" class="secondary-btn move-layer-btn" data-move-layer="1" disabled>1</button>
+              <button type="button" class="secondary-btn move-layer-btn" data-move-layer="2" disabled>2</button>
+              <button type="button" class="secondary-btn move-layer-btn" data-move-layer="3" disabled>3</button>
+            </div>
+            <div class="btn-row">
+              <button type="button" class="secondary-btn full-width" id="move-all-labels-btn" disabled>Move all to layer 1</button>
+            </div>
+          </div>
+        </details>
+      </aside>
+
+      <section class="panel map-canvas-panel">
+        <div class="canvas-wrap">
+          <canvas
+            id="map-canvas"
+            width="1200"
+            height="760"
+            tabindex="0"
+            aria-label="Map canvas"
+            aria-describedby="map-empty"
+          ></canvas>
+          <div id="map-empty" class="map-empty">Drop map files above, or choose files to begin.</div>
+        </div>
+
+        <div class="map-search-bar">
+          <label class="subsection-label" for="search-input">Search labels</label>
+          <div class="map-search-row">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input type="search" id="search-input" placeholder="Search labels…" autocomplete="off">
+            <button type="button" class="secondary-btn" id="search-prev" disabled>Prev</button>
+            <button type="button" class="secondary-btn" id="search-next" disabled>Next</button>
+            <span id="search-count" class="search-count" aria-live="polite"></span>
+          </div>
+        </div>
+
+        <p id="map-coords" class="map-coords">X: - · Y: - · Z: -</p>
+      </section>
+    </section>
+
+    <section class="tool-guide" aria-labelledby="map-guide-heading">
+      <h2 id="map-guide-heading">How the Map Viewer works</h2>
+      <p>
+        EverQuest Legends ships zone maps as text files: a base map plus optional label layers.
+        This viewer loads those files in the browser so you can pan, search labels, edit points of interest by layer,
+        and export either the map files or a rendered image.
+      </p>
+      <p class="tool-related">
+        Got any powerful new spells to pick from?
+        Set up your gems with our <a href="/eqlfinest/spell-bars/">spell bars editor</a>.
+      </p>
+      <p class="tool-related">
+        Need the full zone map pack?
+        <a href="/eqlfinest/rari-eqlmaps-20260722.zip">Download rari-eqlmaps-20260722.zip</a>
+        (dark and light label sets), then drop zone <code>.txt</code> files here.
+      </p>
+      <h3>How to use</h3>
+      <ol>
+        <li>Open or drop a base map <code>&lt;zone&gt;.txt</code> and optional label layers <code>&lt;zone&gt;_1.txt</code> to <code>&lt;zone&gt;_3.txt</code>.</li>
+        <li>Search for a label, toggle layers, and edit text or positions as needed.</li>
+        <li>Switch light/dark map background if the lines are hard to see.</li>
+        <li>Download your edited files or export a PNG/JPEG render.</li>
+        <li>Put them in your own folder under <code>EverQuest Legends\maps</code>, then switch to that map set in-game. You do not need to replace the default maps.</li>
+      </ol>
+    </section>
+
+    <div class="footer">
+      <p class="footer-line">
+        Create a personal map folder inside
+        <code>EverQuest Legends\maps</code>
+        and switch to it in-game without replacing the default maps.
+      </p>
+    </div>
+  </div>
+</main>
+
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div class="site-footer-top">
+        <p class="site-footer-brand"><a class="site-footer-home" href="/eqlfinest/">Antonica’s Finest</a></p>
+        <nav class="site-footer-links" aria-label="Project links">
+          <a class="site-footer-link" href="https://github.com/rari/eqlfinest/blob/main/LICENSE">License</a>
+          <span class="site-footer-sep" aria-hidden="true">·</span>
+          <a class="site-footer-link" href="https://github.com/rari/eqlfinest" rel="noopener noreferrer" target="_blank">GitHub<span class="sr-only"> (opens in a new tab)</span></a>
+        </nav>
+      </div>
+      <p class="site-footer-line">Game files never leave your browser. Nothing is uploaded to our servers.</p>
+      <p class="site-footer-line">
+        <a class="site-footer-link" href="https://github.com/rari/eqlfinest/blob/main/LICENSE">CC0 1.0</a>
+        · Unofficial fan project, provided as-is, with no warranty.
+      </p>
+      <p class="site-footer-line">
+        Not affiliated with or endorsed by <span class="site-footer-nowrap">Daybreak Game Company LLC</span> or Game Jawn.
+      </p>
+      <hr class="site-footer-rule" aria-hidden="true">
+      <p class="site-footer-line site-footer-legal">
+        EverQuest® is a registered trademark of Daybreak Game Company LLC in the United States and/or other countries.
+        EverQuest Legends and Daybreak are trademarks or registered trademarks of Daybreak Game Company LLC.
+        All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  
+  <script src="/eqlfinest/assets/js/vendor/jszip.min.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/dom.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/site.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/toast.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/tools/map-viewer/map-format.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/tools/map-viewer/map-renderer.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/tools/map-viewer/app.js?v=f9cbfb41176a"></script>
+  
+</body>
+</html>

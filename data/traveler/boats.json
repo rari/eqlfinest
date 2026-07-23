@@ -1,0 +1,75 @@
+{
+  "description": "EQ Legends naval translocator routes. Each route is a dock clique: any listed dock reaches any other dock on that route in one hop (no ship-stop chaining).",
+  "routes": [
+    {
+      "docks": [
+        "South Qeynos",
+        "Erud's Crossing",
+        "Erudin",
+        "Erudin Docks"
+      ],
+      "name": "Naval Translocator",
+      "notes": "Classic Odus ferry line; translocators link every dock on the route.",
+      "route": "Qeynos-Erudin"
+    },
+    {
+      "docks": [
+        "East Freeport",
+        "Ocean of Tears",
+        "Butcherblock Mountains"
+      ],
+      "name": "Naval Translocator",
+      "notes": "Former Seaking stops; Freeport, Ocean of Tears, and Butcherblock are all direct hops.",
+      "route": "Freeport-Butcherblock"
+    },
+    {
+      "docks": [
+        "Butcherblock Mountains",
+        "Timorous Deep"
+      ],
+      "era": "kunark",
+      "name": "Naval Translocator",
+      "route": "Butcherblock-Timorous"
+    },
+    {
+      "docks": [
+        "Oasis of Marr",
+        "Timorous Deep"
+      ],
+      "era": "kunark",
+      "name": "Naval Translocator",
+      "route": "Oasis-Timorous"
+    },
+    {
+      "docks": [
+        "Timorous Deep",
+        "Firiona Vie"
+      ],
+      "era": "kunark",
+      "name": "Naval Translocator",
+      "route": "Timorous-Firiona Vie"
+    },
+    {
+      "docks": [
+        "Timorous Deep",
+        "Overthere"
+      ],
+      "era": "kunark",
+      "name": "Naval Translocator",
+      "route": "Timorous-Overthere"
+    },
+    {
+      "docks": [
+        "Northern Desert of Ro",
+        "Iceclad Ocean"
+      ],
+      "era": "velious",
+      "name": "Naval Translocator",
+      "route": "Velious Icebreaker"
+    }
+  ],
+  "sources": [
+    "https://eqlwiki.com/Travel_Guide",
+    "https://eqlwiki.com/Translocators"
+  ]
+}

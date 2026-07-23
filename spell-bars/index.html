@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- hi from Rari - made this for personal use, but now you can use it too! -->
+<head>
+  <meta charset="UTF-8">
+  
+  <script src="/eqlfinest/assets/js/site-return.js?v=f9cbfb41176a"></script>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070b12">
+  
+  <meta name="robots" content="index,follow">
+  
+  
+  <meta name="description" content="Edit EverQuest Legends spell loadouts offline and see the next spell-line upgrade on each gem.">
+  
+  <meta name="author" content="Rari">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; img-src 'self' data: blob:; font-src 'self'; style-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; child-src 'self' blob:">
+  <link rel="icon" href="/eqlfinest/favicon.ico">
+  <link rel="apple-touch-icon" href="/eqlfinest/assets/img/apple-touch-icon.png">
+  
+  <meta property="og:site_name" content="Antonica’s Finest">
+  <meta property="og:title" content="Spell Bars | Antonica’s Finest">
+  <meta property="og:description" content="Edit bars and see what to scribe next.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rari.github.io/eqlfinest/spell-bars/">
+  
+  <meta property="og:image" content="https://rari.github.io/eqlfinest/assets/img/og/spell-bars.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Spell Bars — edit bars and see what to scribe next">
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Spell Bars | Antonica’s Finest">
+  <meta name="twitter:description" content="Edit bars and see what to scribe next.">
+  
+  <meta name="twitter:image" content="https://rari.github.io/eqlfinest/assets/img/og/spell-bars.jpg">
+  <meta name="twitter:image:alt" content="Spell Bars — edit bars and see what to scribe next">
+  
+  
+  <title>Spell Bars | Antonica’s Finest</title>
+  
+  <link rel="canonical" href="https://rari.github.io/eqlfinest/spell-bars/">
+  
+  <link rel="preload" href="/eqlfinest/assets/fonts/cinzel-500.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/eqlfinest/assets/fonts/cinzel-700.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/eqlfinest/assets/fonts/source-sans-3-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/eqlfinest/assets/img/hero-texture.webp" as="image" type="image/webp" fetchpriority="high">
+  
+  <link rel="stylesheet" href="/eqlfinest/assets/css/site.css?v=f9cbfb41176a">
+  
+  <link rel="stylesheet" href="/eqlfinest/assets/css/tools/spell-bars.css?v=f9cbfb41176a">
+  
+  
+  
+  <link rel="preload" href="/eqlfinest/assets/img/class-sprite.png?v=f9cbfb41176a" as="image">
+  
+  
+  
+  
+  
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Spell Bars",
+  "url": "https://rari.github.io/eqlfinest/spell-bars/",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Antonica’s Finest",
+    "url": "https://rari.github.io/eqlfinest/"
+  },
+  "description": "Edit EverQuest Legends spell loadouts offline and see the next spell-line upgrade on each gem.",
+  "author": { "@type": "Person", "name": "Rari" },
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+
+  </script>
+  
+  
+</head>
+<body class="has-site-header" data-base="/eqlfinest/" data-build="f9cbfb41176a" data-nav="spell-bars">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <nav class="site-nav" aria-label="Quick tools">
+        
+        <a class="site-nav-link" href="/eqlfinest/traveler/">Travel Guide</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/map-viewer/">Map Viewer</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/loot-filter/">Loot Filter</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/spell-bars/" aria-current="page">Spell Bars</a>
+        
+      </nav>
+    </div>
+  </header>
+
+  <div class="stars" aria-hidden="true"></div>
+
+<main id="main">
+  <div class="hero">
+    <img class="hero-texture" src="/eqlfinest/assets/img/hero-texture.webp" alt="" width="1920" height="1080" decoding="async" fetchpriority="high" aria-hidden="true">
+    <div class="hero-veil" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <a class="brand" href="/eqlfinest/">Antonica’s Finest</a>
+      <h1>Spell Bars</h1>
+      <p class="subtitle">Edit bars and see what to scribe next</p>
+    </div>
+  </div>
+
+  <div class="shell">
+
+    <section class="upload-panel">
+      <div class="upload-drop" id="upload-drop" role="region" aria-label="Loadout file drop zone">
+        <input id="file-input" type="file" accept=".ini,text/plain" hidden>
+        <div class="upload-orb" aria-hidden="true">
+          <span class="upload-orb-ring"></span>
+          <span class="upload-orb-glyph">✦</span>
+        </div>
+        <strong class="upload-title">Drop your loadout here</strong>
+        <span class="upload-hint"><code>&lt;Character&gt;_&lt;server&gt;_LO#.ini</code></span>
+        <p class="tool-privacy">Your loadout stays in this browser. Nothing is uploaded.</p>
+        <div class="upload-actions">
+          <button type="button" class="upload-btn" id="upload-btn">Choose file</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel class-panel" id="class-panel">
+      <div class="class-panel-head">
+        <span class="class-panel-title">Your classes</span>
+        <span class="class-panel-hint">Pick up to 3 to scope the spell picker</span>
+      </div>
+      <div class="class-chip-row" id="class-chip-row"></div>
+      <div class="class-panel-foot">
+        <div class="class-panel-level-block">
+          <div class="class-panel-head class-panel-level-head">
+            <span class="class-panel-title">Your level</span>
+            <span class="class-panel-hint">(Optional) Hide spells above this level in the spell chooser.</span>
+          </div>
+          <label class="field level-field">
+            <span class="sr-only">Your level</span>
+            <input type="number" id="player-level" min="1" max="50" step="1" inputmode="numeric" autocomplete="off" placeholder="e.g. 50">
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section id="editor-panel" class="panel editor-panel hidden" aria-labelledby="spell-editor-heading">
+      <h2 id="spell-editor-heading" class="sr-only">Edit spell bars</h2>
+      <div class="editor-toolbar">
+        <label class="field bar-select-field">
+          <span>Saved bar</span>
+          <select id="bar-select"></select>
+        </label>
+        <div class="toolbar-actions">
+          <button type="button" class="secondary-btn" id="add-bar-btn">
+            <span>Add bar</span>
+            <span class="btn-icon" aria-hidden="true">+</span>
+          </button>
+          <button type="button" class="secondary-btn danger-btn" id="remove-bar-btn">
+            <span>Remove bar</span>
+            <span class="btn-icon" aria-hidden="true">×</span>
+          </button>
+          <button type="button" class="secondary-btn" id="share-btn">
+            <span>Share</span>
+            <span class="btn-icon" aria-hidden="true">⤴</span>
+          </button>
+          <button type="button" class="download-btn" id="download-btn" disabled>
+            <span>Download zip</span>
+            <span class="btn-icon download-icon" aria-hidden="true">↓</span>
+          </button>
+        </div>
+      </div>
+
+      <label class="field bar-name-field">
+        <span>Bar name</span>
+        <input type="text" id="bar-name-input" maxlength="64" autocomplete="off" placeholder="Bar name">
+      </label>
+
+      <div id="slot-grid" class="slot-grid"></div>
+    </section>
+
+    <section class="tool-guide" aria-labelledby="loadout-guide-heading">
+      <h2 id="loadout-guide-heading">How Spell Bars works</h2>
+      <p>
+        Manage your EverQuest Legends spell bars offline: edit gem slots, then use the next-upgrade
+        line under each filled gem to see what to scribe next.
+      </p>
+      <p class="tool-related">
+        Too much treasure, not enough bag space?
+        Tidy things up with our <a href="/eqlfinest/loot-filter/">loot filter</a>.
+      </p>
+      <h3>How to use</h3>
+      <ol>
+        <li>Open a <code>&lt;Character&gt;_&lt;server&gt;_LO#.ini</code> from your EverQuest Legends folder.</li>
+        <li>Choose up to three classes so the spell picker stays relevant.</li>
+        <li>Rename bars, add or remove spell sets, and tap a gem to swap its spell.</li>
+        <li>Use the “Next upgrade” line under each gem to see what to scribe next.</li>
+        <li>Share copies a link for the current bar (clipboard only — your page stays on the open loadout).</li>
+        <li>Download the zip, close the game if it is open, replace the file, then reload in-game.</li>
+      </ol>
+    </section>
+
+    <div class="footer">
+      <p class="footer-line">
+        Find your loadout files in
+        <code>C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest Legends</code>
+      </p>
+      <p id="index-updated" class="footer-line footer-updated"></p>
+    </div>
+  </div>
+</main>
+
+<div id="picker" class="picker-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="picker-title">
+    <div class="picker-dialog">
+      <div class="picker-head">
+        <h2 id="picker-title" class="picker-title">Choose a spell</h2>
+        <button type="button" class="picker-close" id="picker-close" aria-label="Close">✕</button>
+      </div>
+      <div class="picker-controls">
+        <label class="search-field picker-search">
+          <span class="sr-only">Search spells</span>
+          <span class="search-input-wrap">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input type="search" id="picker-search" placeholder="Spell name or ID…" autocomplete="off">
+          </span>
+        </label>
+        <label class="field picker-cat-field">
+          <span class="sr-only">Category</span>
+          <select id="picker-cat"></select>
+        </label>
+      </div>
+      <p id="picker-scope" class="picker-scope"></p>
+      <div id="picker-results" class="picker-results"></div>
+    </div>
+  </div>
+
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div class="site-footer-top">
+        <p class="site-footer-brand"><a class="site-footer-home" href="/eqlfinest/">Antonica’s Finest</a></p>
+        <nav class="site-footer-links" aria-label="Project links">
+          <a class="site-footer-link" href="https://github.com/rari/eqlfinest/blob/main/LICENSE">License</a>
+          <span class="site-footer-sep" aria-hidden="true">·</span>
+          <a class="site-footer-link" href="https://github.com/rari/eqlfinest" rel="noopener noreferrer" target="_blank">GitHub<span class="sr-only"> (opens in a new tab)</span></a>
+        </nav>
+      </div>
+      <p class="site-footer-line">Game files never leave your browser. Nothing is uploaded to our servers.</p>
+      <p class="site-footer-line">
+        <a class="site-footer-link" href="https://github.com/rari/eqlfinest/blob/main/LICENSE">CC0 1.0</a>
+        · Unofficial fan project, provided as-is, with no warranty.
+      </p>
+      <p class="site-footer-line">
+        Not affiliated with or endorsed by <span class="site-footer-nowrap">Daybreak Game Company LLC</span> or Game Jawn.
+      </p>
+      <hr class="site-footer-rule" aria-hidden="true">
+      <p class="site-footer-line site-footer-legal">
+        EverQuest® is a registered trademark of Daybreak Game Company LLC in the United States and/or other countries.
+        EverQuest Legends and Daybreak are trademarks or registered trademarks of Daybreak Game Company LLC.
+        All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  
+  <script src="/eqlfinest/assets/js/vendor/jszip.min.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/dom.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/site.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/toast.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/focus-trap.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/tools/spell-bars/loadout-io.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/tools/spell-bars/app.js?v=f9cbfb41176a"></script>
+  
+</body>
+</html>

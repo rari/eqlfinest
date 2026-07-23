@@ -1,0 +1,21 @@
+# Deploy-only GitHub Pages tree. Source and generators live in ../eqlfinest-src/
+
+# Python / OS / editors
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.swp
+*~
+*.log
+.cache/
+.tmp/
+
+# Never commit source tooling here
+scripts/
+spell_lines.yaml
+*.bat
+COVER_RANGES.md

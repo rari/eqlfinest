@@ -1,0 +1,16 @@
+Antonica’s Finest self-hosts the following fonts under assets/fonts/.
+
+Cinzel
+  Files: cinzel-500.woff2, cinzel-700.woff2
+  License: SIL Open Font License 1.1 — see OFL-Cinzel.txt
+  Copyright 2020 The Cinzel Project Authors
+  (https://github.com/NDISCOVER/Cinzel)
+
+Source Sans 3
+  Files: source-sans-3-400.woff2, source-sans-3-600.woff2
+  License: SIL Open Font License 1.1 — see OFL-SourceSans3.txt
+  Copyright 2010–2020 Adobe (http://www.adobe.com/), with Reserved Font Name
+  'Source'. Source is a trademark of Adobe in the United States and/or other
+  countries.
+
+These fonts are redistributed unmodified under the terms of the SIL OFL 1.1.

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- hi from Rari - made this for personal use, but now you can use it too! -->
+<head>
+  <meta charset="UTF-8">
+  
+  <script src="/eqlfinest/assets/js/site-return.js?v=f9cbfb41176a"></script>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070b12">
+  
+  <meta name="robots" content="index,follow">
+  
+  
+  <meta name="description" content="Find the shortest path across Norrath for EverQuest Legends: foot travel, boats, and druid or wizard ports.">
+  
+  <meta name="author" content="Rari">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; img-src 'self' data: blob:; font-src 'self'; style-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; child-src 'self' blob:">
+  <link rel="icon" href="/eqlfinest/favicon.ico">
+  <link rel="apple-touch-icon" href="/eqlfinest/assets/img/apple-touch-icon.png">
+  
+  <meta property="og:site_name" content="Antonica’s Finest">
+  <meta property="og:title" content="Travel Guide | Antonica’s Finest">
+  <meta property="og:description" content="Find the shortest path across Norrath.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rari.github.io/eqlfinest/traveler/">
+  
+  <meta property="og:image" content="https://rari.github.io/eqlfinest/assets/img/og/traveler.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Travel Guide — find the shortest path across Norrath">
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Travel Guide | Antonica’s Finest">
+  <meta name="twitter:description" content="Find the shortest path across Norrath.">
+  
+  <meta name="twitter:image" content="https://rari.github.io/eqlfinest/assets/img/og/traveler.jpg">
+  <meta name="twitter:image:alt" content="Travel Guide — find the shortest path across Norrath">
+  
+  
+  <title>Travel Guide | Antonica’s Finest</title>
+  
+  <link rel="canonical" href="https://rari.github.io/eqlfinest/traveler/">
+  
+  <link rel="preload" href="/eqlfinest/assets/fonts/cinzel-500.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/eqlfinest/assets/fonts/cinzel-700.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/eqlfinest/assets/fonts/source-sans-3-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/eqlfinest/assets/img/hero-texture.webp" as="image" type="image/webp" fetchpriority="high">
+  
+  <link rel="stylesheet" href="/eqlfinest/assets/css/site.css?v=f9cbfb41176a">
+  
+  <link rel="stylesheet" href="/eqlfinest/assets/css/tools/traveler.css?v=f9cbfb41176a">
+  
+  
+  
+  
+  
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Travel Guide",
+  "url": "https://rari.github.io/eqlfinest/traveler/",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Antonica’s Finest",
+    "url": "https://rari.github.io/eqlfinest/"
+  },
+  "description": "Find the shortest path across Norrath for EverQuest Legends.",
+  "author": { "@type": "Person", "name": "Rari" },
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+
+  </script>
+  
+  
+</head>
+<body class="has-site-header" data-base="/eqlfinest/" data-build="f9cbfb41176a" data-nav="traveler">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <nav class="site-nav" aria-label="Quick tools">
+        
+        <a class="site-nav-link" href="/eqlfinest/traveler/" aria-current="page">Travel Guide</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/map-viewer/">Map Viewer</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/loot-filter/">Loot Filter</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/spell-bars/">Spell Bars</a>
+        
+      </nav>
+    </div>
+  </header>
+
+  <div class="stars" aria-hidden="true"></div>
+
+<main id="main">
+  <div class="hero">
+    <img class="hero-texture" src="/eqlfinest/assets/img/hero-texture.webp" alt="" width="1920" height="1080" decoding="async" fetchpriority="high" aria-hidden="true">
+    <div class="hero-veil" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <a class="brand" href="/eqlfinest/">Antonica’s Finest</a>
+      <h1>Travel Guide</h1>
+      <p class="subtitle">Find the shortest path across Norrath</p>
+    </div>
+  </div>
+
+  <div class="shell">
+
+    <section class="panel search-panel" aria-labelledby="route-planner-heading">
+      <h2 id="route-planner-heading" class="sr-only">Find a route</h2>
+      <div id="era-filters" class="era-filters" role="group" aria-label="Expansion filters">
+        <button type="button" class="filter-chip active" data-era="classic" aria-pressed="true">Classic</button>
+        <button type="button" class="filter-chip" data-era="kunark" aria-pressed="false">Kunark</button>
+        <button type="button" class="filter-chip" data-era="velious" aria-pressed="false">Velious</button>
+      </div>
+
+      <form id="path-form" class="path-form">
+        <div class="route-row">
+          <label class="field zone-field">
+            <span>From</span>
+            <button type="button" class="zone-picker" id="from-zone-btn" data-target="from" aria-haspopup="dialog">
+              <span class="zone-picker-value is-placeholder" id="from-zone-label">Choose starting zone</span>
+              <span class="zone-picker-chevron" aria-hidden="true">›</span>
+            </button>
+            <input type="hidden" id="from-zone" name="from" required>
+          </label>
+
+          <button type="button" id="swap-zones" class="swap-btn" title="Swap zones" aria-label="Swap zones">⇄</button>
+
+          <label class="field zone-field">
+            <span>To</span>
+            <button type="button" class="zone-picker" id="to-zone-btn" data-target="to" aria-haspopup="dialog">
+              <span class="zone-picker-value is-placeholder" id="to-zone-label">Choose destination</span>
+              <span class="zone-picker-chevron" aria-hidden="true">›</span>
+            </button>
+            <input type="hidden" id="to-zone" name="to" required>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="go-btn">Find routes</button>
+          <button type="button" class="share-btn" id="share-btn" disabled>
+            <span>Share</span>
+            <span class="btn-icon" aria-hidden="true">⤴</span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section id="result" class="panel result-panel hidden">
+      <div class="result-header">
+        <h2 id="result-title">Route</h2>
+      </div>
+
+      <div id="result-tabs" class="result-tabs" role="tablist" aria-label="Travel mode results"></div>
+
+      <div id="tab-panels" class="tab-panels"></div>
+    </section>
+
+    <section id="error" class="panel error-panel hidden" role="alert"></section>
+
+    <section class="tool-guide" aria-labelledby="travel-guide-heading">
+      <h2 id="travel-guide-heading">How the Travel Guide works</h2>
+      <p>
+        Getting across Norrath in EverQuest Legends often means chaining zone connections.
+        This guide finds a short hop-count route from one zone to another.
+      </p>
+      <p class="tool-related">
+        Decided where you're going next?
+        Mark the way with our <a href="/eqlfinest/map-viewer/">map viewer</a>.
+      </p>
+      <h3>How to use</h3>
+      <ol>
+        <li>Choose Classic, Kunark, and/or Velious so locked zones stay out of the path.</li>
+        <li>Pick a from-zone and to-zone, then hit “Find routes”.</li>
+        <li>Compare the By Foot, Druid Ports, and Wizard Ports result tabs for the route that works best for you.</li>
+        <li>Share copies a link for this route (clipboard only — your page stays on the open search).</li>
+      </ol>
+    </section>
+
+    <div class="footer">
+      <p class="footer-line">
+        Routes are hop-count only, provided for quick traveling reference. Succor points and zone size are not considered.
+        All players have free access to Origin and Gather Party AAs in EverQuest Legends.
+      </p>
+    </div>
+  </div>
+</main>
+
+<div id="zone-sheet" class="zone-sheet hidden" role="dialog" aria-modal="true" aria-labelledby="zone-sheet-title">
+    <button type="button" class="zone-sheet-backdrop" id="zone-sheet-backdrop" aria-label="Close zone picker"></button>
+    <div class="zone-sheet-panel">
+      <header class="zone-sheet-header">
+        <h2 id="zone-sheet-title">Choose zone</h2>
+        <button type="button" class="zone-sheet-close" id="zone-sheet-close" aria-label="Close">✕</button>
+      </header>
+      <div class="zone-sheet-search-wrap">
+        <label class="sr-only" for="zone-search">Search zones</label>
+        <input
+          type="search"
+          id="zone-search"
+          class="zone-sheet-search"
+          placeholder="Search zones…"
+          autocomplete="off"
+          enterkeyhint="search"
+          aria-label="Search zones"
+        >
+      </div>
+      <ul id="zone-options" class="zone-options"></ul>
+    </div>
+  </div>
+
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div class="site-footer-top">
+        <p class="site-footer-brand"><a class="site-footer-home" href="/eqlfinest/">Antonica’s Finest</a></p>
+        <nav class="site-footer-links" aria-label="Project links">
+          <a class="site-footer-link" href="https://github.com/rari/eqlfinest/blob/main/LICENSE">License</a>
+          <span class="site-footer-sep" aria-hidden="true">·</span>
+          <a class="site-footer-link" href="https://github.com/rari/eqlfinest" rel="noopener noreferrer" target="_blank">GitHub<span class="sr-only"> (opens in a new tab)</span></a>
+        </nav>
+      </div>
+      <p class="site-footer-line">Game files never leave your browser. Nothing is uploaded to our servers.</p>
+      <p class="site-footer-line">
+        <a class="site-footer-link" href="https://github.com/rari/eqlfinest/blob/main/LICENSE">CC0 1.0</a>
+        · Unofficial fan project, provided as-is, with no warranty.
+      </p>
+      <p class="site-footer-line">
+        Not affiliated with or endorsed by <span class="site-footer-nowrap">Daybreak Game Company LLC</span> or Game Jawn.
+      </p>
+      <hr class="site-footer-rule" aria-hidden="true">
+      <p class="site-footer-line site-footer-legal">
+        EverQuest® is a registered trademark of Daybreak Game Company LLC in the United States and/or other countries.
+        EverQuest Legends and Daybreak are trademarks or registered trademarks of Daybreak Game Company LLC.
+        All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  
+  <script src="/eqlfinest/assets/js/dom.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/site.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/toast.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/focus-trap.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/tools/traveler/pathfinder.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/tools/traveler/app.js?v=f9cbfb41176a"></script>
+  
+</body>
+</html>

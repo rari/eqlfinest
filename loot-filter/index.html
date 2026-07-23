@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- hi from Rari - made this for personal use, but now you can use it too! -->
+<head>
+  <meta charset="UTF-8">
+  
+  <script src="/eqlfinest/assets/js/site-return.js?v=f9cbfb41176a"></script>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070b12">
+  
+  <meta name="robots" content="index,follow">
+  
+  
+  <meta name="description" content="Clean up your advanced loot rules. Open LF_*.ini files, edit Loot, Merge, Store, and Sell, merge filters, then export.">
+  
+  <meta name="author" content="Rari">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; img-src 'self' data: blob:; font-src 'self'; style-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; child-src 'self' blob:">
+  <link rel="icon" href="/eqlfinest/favicon.ico">
+  <link rel="apple-touch-icon" href="/eqlfinest/assets/img/apple-touch-icon.png">
+  
+  <meta property="og:site_name" content="Antonica’s Finest">
+  <meta property="og:title" content="Loot Filter | Antonica’s Finest">
+  <meta property="og:description" content="Clean up your advanced loot rules.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rari.github.io/eqlfinest/loot-filter/">
+  
+  <meta property="og:image" content="https://rari.github.io/eqlfinest/assets/img/og/loot-filter.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Loot Filter — clean up your advanced loot rules">
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Loot Filter | Antonica’s Finest">
+  <meta name="twitter:description" content="Clean up your advanced loot rules.">
+  
+  <meta name="twitter:image" content="https://rari.github.io/eqlfinest/assets/img/og/loot-filter.jpg">
+  <meta name="twitter:image:alt" content="Loot Filter — clean up your advanced loot rules">
+  
+  
+  <title>Loot Filter | Antonica’s Finest</title>
+  
+  <link rel="canonical" href="https://rari.github.io/eqlfinest/loot-filter/">
+  
+  <link rel="preload" href="/eqlfinest/assets/fonts/cinzel-500.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/eqlfinest/assets/fonts/cinzel-700.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/eqlfinest/assets/fonts/source-sans-3-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/eqlfinest/assets/img/hero-texture.webp" as="image" type="image/webp" fetchpriority="high">
+  
+  <link rel="stylesheet" href="/eqlfinest/assets/css/site.css?v=f9cbfb41176a">
+  
+  <link rel="stylesheet" href="/eqlfinest/assets/css/tools/loot-filter.css?v=f9cbfb41176a">
+  
+  
+  
+  
+  
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Loot Filter",
+  "url": "https://rari.github.io/eqlfinest/loot-filter/",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Antonica’s Finest",
+    "url": "https://rari.github.io/eqlfinest/"
+  },
+  "description": "Clean up your advanced loot rules for EverQuest Legends LF_*.ini filters.",
+  "author": { "@type": "Person", "name": "Rari" },
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+
+  </script>
+  
+  
+</head>
+<body class="has-site-header" data-base="/eqlfinest/" data-build="f9cbfb41176a" data-nav="loot-filter">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <nav class="site-nav" aria-label="Quick tools">
+        
+        <a class="site-nav-link" href="/eqlfinest/traveler/">Travel Guide</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/map-viewer/">Map Viewer</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/loot-filter/" aria-current="page">Loot Filter</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/spell-bars/">Spell Bars</a>
+        
+      </nav>
+    </div>
+  </header>
+
+  <div class="stars" aria-hidden="true"></div>
+
+<main id="main">
+  <div class="hero">
+    <img class="hero-texture" src="/eqlfinest/assets/img/hero-texture.webp" alt="" width="1920" height="1080" decoding="async" fetchpriority="high" aria-hidden="true">
+    <div class="hero-veil" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <a class="brand" href="/eqlfinest/">Antonica’s Finest</a>
+      <h1>Loot Filter</h1>
+      <p class="subtitle">Clean up your advanced loot rules</p>
+    </div>
+  </div>
+
+  <div class="shell">
+
+    <section class="upload-panel">
+      <div class="upload-drop" id="upload-drop" role="region" aria-label="Loot filter file drop zone">
+        <input id="file-input" type="file" accept=".ini,text/plain" hidden>
+        <div class="upload-orb" aria-hidden="true">
+          <span class="upload-orb-ring"></span>
+          <span class="upload-orb-glyph">✦</span>
+        </div>
+        <strong class="upload-title">Drop your loot filter here</strong>
+        <span class="upload-hint"><code>LF_&lt;Character&gt;_&lt;server&gt;.ini</code></span>
+        <p class="tool-privacy">Your loot filter stays in this browser. Nothing is uploaded.</p>
+        <div class="upload-actions">
+          <button type="button" class="upload-btn" id="upload-btn">Choose file</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="editor-panel" class="panel editor-panel hidden" aria-labelledby="loot-editor-heading">
+      <h2 id="loot-editor-heading" class="sr-only">Edit loot rules</h2>
+      <div class="editor-toolbar">
+        <div class="search-wrap">
+          <label class="search-field" for="search-input">
+            <span class="search-label">Search items</span>
+            <span class="search-input-wrap">
+              <span class="search-icon" aria-hidden="true">⌕</span>
+              <input type="search" id="search-input" placeholder="Item name or ID…" autocomplete="off">
+            </span>
+          </label>
+        </div>
+        <div class="tag-filter-wrap">
+          <span class="search-label" id="tag-filter-label">Filter tags</span>
+          <div class="tag-filter">
+            <button
+              type="button"
+              id="tag-filter-btn"
+              class="tag-filter-btn"
+              aria-expanded="false"
+              aria-controls="tag-filter-panel"
+              aria-labelledby="tag-filter-label"
+              disabled
+            >
+              <span id="tag-filter-summary">Any tag</span>
+              <span class="tag-filter-chevron" aria-hidden="true">▾</span>
+            </button>
+            <div
+              id="tag-filter-panel"
+              class="tag-filter-panel"
+              hidden
+              role="group"
+              aria-labelledby="tag-filter-label"
+            >
+              <div class="tag-filter-panel-bar">
+                <span class="tag-filter-panel-note">Within a group: any match. Across groups: all must match.</span>
+                <button type="button" id="tag-filter-clear" class="tag-filter-clear">Clear</button>
+              </div>
+              <div id="tag-filter-options" class="tag-filter-options"></div>
+            </div>
+          </div>
+        </div>
+        <div class="toolbar-actions">
+          <button type="button" class="secondary-btn" id="merge-btn" disabled>Merge</button>
+          <input id="import-input" type="file" accept=".ini,text/plain" hidden>
+          <button type="button" class="download-btn" id="download-btn" disabled>
+            <span>Download zip</span>
+            <span class="download-icon" aria-hidden="true">↓</span>
+          </button>
+        </div>
+      </div>
+
+      <p id="file-meta" class="file-meta"></p>
+      <p id="row-count" class="row-count"></p>
+
+      <div class="editor-options">
+        <label class="option-toggle confirm-remove">
+          <input type="checkbox" id="confirm-remove" checked>
+          Confirm before removing items
+        </label>
+      </div>
+
+      <div class="table-wrap">
+        <table class="loot-table" aria-label="Loot filter items">
+          <thead>
+            <tr>
+              <th scope="col">Item</th>
+              <th scope="col">Name</th>
+              <th scope="col">Tags</th>
+              <th scope="col">
+                <button type="button" class="col-action-btn" data-bulk-filter-id="2" title="Set all visible items to Loot">Loot</button>
+              </th>
+              <th scope="col">
+                <button type="button" class="col-action-btn" data-bulk-filter-id="3" title="Set all visible items to Merge">Merge</button>
+              </th>
+              <th scope="col">
+                <button type="button" class="col-action-btn" data-bulk-filter-id="1" title="Set all visible items to Store">Store</button>
+              </th>
+              <th scope="col">
+                <button type="button" class="col-action-btn" data-bulk-filter-id="4" title="Set all visible items to Sell">Sell</button>
+              </th>
+              <th scope="col"><span class="sr-only">Remove</span></th>
+            </tr>
+          </thead>
+          <tbody id="loot-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="tool-guide" aria-labelledby="loot-guide-heading">
+      <h2 id="loot-guide-heading">How the Loot Filter editor works</h2>
+      <p>
+        EverQuest Legends advanced loot uses per-character filter files with Loot, Merge, Store, and Sell lists.
+        This tool helps you review those rules, combine filters, and export something you can use in-game without hand-editing a huge INI.
+      </p>
+      <p class="tool-related">
+        Off to somewhere new?
+        Let our <a href="/eqlfinest/traveler/">travel guide</a> lead the way.
+      </p>
+      <h3>How to use</h3>
+      <ol>
+        <li>Open a <code>LF_&lt;Character&gt;_&lt;server&gt;.ini</code> from your userdata folder.</li>
+        <li>Browse and edit rules by category (Loot, Merge, Store, Sell).</li>
+        <li>Merge filters when you want to combine your list with someone else’s.</li>
+        <li>Download the zip, close the game if it is open, replace the file, then reload in-game.</li>
+      </ol>
+    </section>
+
+    <div class="footer">
+      <p class="footer-line">
+        Find loot filter files in
+        <code>C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest Legends\userdata</code>
+      </p>
+    </div>
+  </div>
+</main>
+
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div class="site-footer-top">
+        <p class="site-footer-brand"><a class="site-footer-home" href="/eqlfinest/">Antonica’s Finest</a></p>
+        <nav class="site-footer-links" aria-label="Project links">
+          <a class="site-footer-link" href="https://github.com/rari/eqlfinest/blob/main/LICENSE">License</a>
+          <span class="site-footer-sep" aria-hidden="true">·</span>
+          <a class="site-footer-link" href="https://github.com/rari/eqlfinest" rel="noopener noreferrer" target="_blank">GitHub<span class="sr-only"> (opens in a new tab)</span></a>
+        </nav>
+      </div>
+      <p class="site-footer-line">Game files never leave your browser. Nothing is uploaded to our servers.</p>
+      <p class="site-footer-line">
+        <a class="site-footer-link" href="https://github.com/rari/eqlfinest/blob/main/LICENSE">CC0 1.0</a>
+        · Unofficial fan project, provided as-is, with no warranty.
+      </p>
+      <p class="site-footer-line">
+        Not affiliated with or endorsed by <span class="site-footer-nowrap">Daybreak Game Company LLC</span> or Game Jawn.
+      </p>
+      <hr class="site-footer-rule" aria-hidden="true">
+      <p class="site-footer-line site-footer-legal">
+        EverQuest® is a registered trademark of Daybreak Game Company LLC in the United States and/or other countries.
+        EverQuest Legends and Daybreak are trademarks or registered trademarks of Daybreak Game Company LLC.
+        All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  
+  <script src="/eqlfinest/assets/js/vendor/jszip.min.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/dom.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/site.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/toast.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/tools/loot-filter/loot-filter.js?v=f9cbfb41176a"></script>
+  
+  <script src="/eqlfinest/assets/js/tools/loot-filter/app.js?v=f9cbfb41176a"></script>
+  
+</body>
+</html>
