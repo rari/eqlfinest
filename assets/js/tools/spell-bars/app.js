@@ -1,6 +1,7 @@
 const uploadDrop = document.getElementById("upload-drop");
 let fileInput = document.getElementById("file-input");
 const uploadBtn = document.getElementById("upload-btn");
+const previewOnlyBtn = document.getElementById("preview-only-btn");
 const classChipRow = document.getElementById("class-chip-row");
 const playerLevelInput = document.getElementById("player-level");
 const classPanel = document.getElementById("class-panel");
@@ -8,11 +9,15 @@ const editorPanel = document.getElementById("editor-panel");
 const barSelect = document.getElementById("bar-select");
 const barNameInput = document.getElementById("bar-name-input");
 const addBarBtn = document.getElementById("add-bar-btn");
+const cloneBarBtn = document.getElementById("clone-bar-btn");
 const removeBarBtn = document.getElementById("remove-bar-btn");
 const downloadBtn = document.getElementById("download-btn");
 const shareBtn = document.getElementById("share-btn");
 const slotGrid = document.getElementById("slot-grid");
 const indexUpdated = document.getElementById("index-updated");
+const nextLevelBtn = document.getElementById("next-level-btn");
+const nextLevelBtnLabel = document.getElementById("next-level-btn-label");
+const swapStatus = document.getElementById("swap-status");
 
 const picker = document.getElementById("picker");
 const pickerTitle = document.getElementById("picker-title");
@@ -21,6 +26,8 @@ const pickerSearch = document.getElementById("picker-search");
 const pickerCat = document.getElementById("picker-cat");
 const pickerScope = document.getElementById("picker-scope");
 const pickerResults = document.getElementById("picker-results");
+const pickerNewOnly = document.getElementById("picker-new-only");
+const pickerNewOnlyWrap = document.getElementById("picker-new-only-wrap");
 
 const SLOT_COUNT = EQLLoadout.SLOT_COUNT;
 const MAX_CLASSES = 3;
@@ -63,8 +70,11 @@ let bars = [];
 let currentBarIndex = null;
 let sourceFileName = "loadout.ini";
 let sharedMode = false;
+let previewMode = false;
 let syncingHash = false;
 let pickerSlot = null;
+let pickerMode = "assign";
+let swapSourceSlot = null;
 let tipEl = null;
 let tipSpellId = null;
 let tipEnabled = false;
@@ -112,6 +122,115 @@ function renderIndexUpdated() {
   indexUpdated.textContent = label ? `Spell index last updated on ${label}` : "";
 }
 
+function spellTipForEntry(entry) {
+  return entry?.id != null ? lookupTip(entry.id) : null;
+}
+
+function targetDecor(entry, tip = null) {
+  const t = tip ?? spellTipForEntry(entry);
+  const kind = EQLSpellMeta.getTargetKind(entry, t);
+  const label = EQLSpellMeta.TARGET_LABELS[kind] || kind;
+  const fullTarget = t?.tg ? String(t.tg).trim() : "";
+  const title = fullTarget || label;
+  return {
+    kind,
+    label,
+    title,
+    kindClass: `target-kind-${kind}`,
+  };
+}
+
+function spellstrikeChipHtml() {
+  return `<span class="spellstrike-chip">Spellstrike</span>`;
+}
+
+function spellMetaLine(entry, tip = null) {
+  const t = tip ?? spellTipForEntry(entry);
+  const family = EQLSpellMeta.getSpellFamily(entry, t);
+  const variant = EQLSpellMeta.getSpellVariant(entry, t);
+  return `${escapeHtml(family)} · ${escapeHtml(variant)}`;
+}
+
+function isSpellstrike(entry, tip = null) {
+  const t = tip ?? spellTipForEntry(entry);
+  return EQLSpellMeta.isSpellstrikeEligible(entry, t, selectedClasses);
+}
+
+function isNextLevelValid() {
+  return playerLevel > 0 && playerLevel < MAX_LEVEL;
+}
+
+function nextLevelNumber() {
+  return playerLevel > 0 ? playerLevel + 1 : null;
+}
+
+function canUseNewOnlyFilter() {
+  return playerLevel > 0 && pickerMode !== "nextLevel";
+}
+
+function isSpellNew(entry) {
+  if (playerLevel <= 0) {
+    return false;
+  }
+  const codes = selectedClasses.length ? selectedClasses : CLASS_ORDER;
+  return codes.some(
+    (code) => classCanCast(entry, code) && Number(entry.c[code]) === playerLevel
+  );
+}
+
+function buildNextLevelSpellList() {
+  const levelN = nextLevelNumber();
+  if (levelN == null || levelN > MAX_LEVEL) {
+    return [];
+  }
+  const codes = selectedClasses.length ? selectedClasses : CLASS_ORDER;
+  const seen = new Set();
+  const out = [];
+  for (const entry of allSpells) {
+    if (!spellHasSelectedClass(entry)) {
+      continue;
+    }
+    const learnsAtN = codes.some(
+      (code) => classCanCast(entry, code) && Number(entry.c[code]) === levelN
+    );
+    if (!learnsAtN || seen.has(entry.id)) {
+      continue;
+    }
+    seen.add(entry.id);
+    out.push(entry);
+  }
+  out.sort((a, b) => a.n.localeCompare(b.n, undefined, { sensitivity: "base" }));
+  return out;
+}
+
+function updateNextLevelLabel() {
+  if (!nextLevelBtnLabel) {
+    return;
+  }
+  const n = playerLevel > 0 ? playerLevel + 1 : 2;
+  nextLevelBtnLabel.textContent = `Show level ${n} spells`;
+}
+
+function updatePickerNewOnlyState() {
+  if (!pickerNewOnly) {
+    return;
+  }
+  const applies = canUseNewOnlyFilter();
+  pickerNewOnly.disabled = !applies;
+  if (!applies) {
+    pickerNewOnly.checked = false;
+  }
+  if (pickerNewOnlyWrap) {
+    if (pickerMode === "nextLevel") {
+      pickerNewOnlyWrap.title = "Not available when browsing next-level spells";
+    } else if (playerLevel <= 0) {
+      pickerNewOnlyWrap.title = "Set your level to filter new spells";
+    } else {
+      pickerNewOnlyWrap.title = "";
+    }
+  }
+}
+
 /* ---------- class selection ---------- */
 
 function renderClassChips() {
@@ -148,6 +267,7 @@ function toggleClass(code) {
   if (bars.length) {
     renderSlots();
   }
+  updateControls();
 }
 
 /* ---------- spell index helpers ---------- */
@@ -226,19 +346,22 @@ function upgradeRowHtml(entry, info = null) {
   const { upgrade, isFinal, hasLine } = info || nextUpgrade(entry);
   if (upgrade) {
     const icon = upgrade.i ? spellIconHtml(upgrade) : "";
-    // Always show every casting class for the upgrade (picker selection only scopes search).
     const levels = classChipsHtml(upgrade, {
       scopeToSelection: false,
       markOutOfReach: true,
     });
+    const tip = spellTipForEntry(upgrade);
+    const spellstrike = isSpellstrike(upgrade, tip);
     const tipAttr =
       upgrade.id != null
         ? ` data-tip-spell="${escapeHtml(upgrade.id)}"`
         : "";
+    const badges = spellstrike ? spellstrikeChipHtml() : "";
     return `
-      <div class="slot-upgrade has-next"${tipAttr}>
+      <div class="slot-upgrade has-next${spellstrike ? " is-spellstrike" : ""}"${tipAttr}>
         <span class="slot-upgrade-label">Next upgrade</span>
         <div class="slot-upgrade-title">${icon}<strong>${escapeHtml(upgrade.n)}</strong></div>
+        ${badges}
         ${levels ? `<div class="slot-upgrade-levels">${levels}</div>` : ""}
       </div>
     `;
@@ -309,7 +432,11 @@ function lookupSpell(spellId) {
   if (spellId == null) {
     return null;
   }
-  return spellDb.spells[String(spellId)] || null;
+  const entry = spellDb.spells[String(spellId)];
+  if (!entry) {
+    return null;
+  }
+  return { ...entry, id: Number(spellId) };
 }
 
 function lookupTip(spellId) {
@@ -456,7 +583,8 @@ function showSpellTip(spellId, clientX, clientY) {
 }
 
 function tipTargetSpellId(node) {
-  if (node?.closest?.(".slot-btn, .slot-actions, button")) {
+  // Slot action chrome should not steal tips; picker rows are buttons and must tip.
+  if (node?.closest?.(".slot-btn, .slot-actions")) {
     return null;
   }
   const host = node?.closest?.("[data-tip-spell]");
@@ -534,6 +662,10 @@ function classChipsHtml(
   return `<span class="${wrapperClass}">${chips}</span>`;
 }
 
+function slotSwapBtnHtml(slotNumber) {
+  return `<button type="button" class="slot-btn slot-swap" data-slot="${slotNumber}">Swap</button>`;
+}
+
 /* ---------- share links ---------- */
 
 function toBase64Url(bytes) {
@@ -607,13 +739,39 @@ function clearShareHash() {
 
 function applySharedBar(decoded) {
   sharedMode = true;
+  previewMode = false;
   model = null;
   sourceFileName = "shared";
   bars = [{ index: 1, name: decoded.name, slots: decoded.slots.slice() }];
   currentBarIndex = 1;
   editorPanel.classList.remove("hidden");
+  cancelSwap();
   selectBar(1);
   setStatus(`Opened shared bar “${decoded.name}”. Load a loadout file to edit and download.`);
+}
+
+function startPreviewOnly() {
+  clearShareHash();
+  sharedMode = false;
+  previewMode = true;
+  model = { preview: true };
+  sourceFileName = "preview.ini";
+  const defaultName = selectedClasses.length
+    ? `${selectedClasses.join("-")} Preview`
+    : "Preview bar";
+  bars = [
+    {
+      index: 1,
+      name: defaultName,
+      slots: new Array(SLOT_COUNT).fill(null),
+    },
+  ];
+  currentBarIndex = 1;
+  editorPanel.classList.remove("hidden");
+  cancelSwap();
+  selectBar(1);
+  setStatus("Preview mode — build one bar and share it. Download needs a loaded loadout file.");
+  scrollToAfterUpload();
 }
 
 function loadFromHash() {
@@ -663,6 +821,58 @@ function populateBarSelect() {
   }
 }
 
+function cancelSwap() {
+  if (swapSourceSlot == null) {
+    updateSwapStatus();
+    return;
+  }
+  swapSourceSlot = null;
+  updateSwapStatus();
+  renderSlots();
+}
+
+function updateSwapStatus() {
+  if (!swapStatus) {
+    return;
+  }
+  if (swapSourceSlot == null) {
+    swapStatus.classList.add("hidden");
+    swapStatus.innerHTML = "";
+    return;
+  }
+  swapStatus.classList.remove("hidden");
+  swapStatus.innerHTML =
+    `Swap: gem ${swapSourceSlot} selected — click another gem to swap, or ` +
+    `<button type="button" class="link-btn swap-cancel">Cancel</button>.`;
+}
+
+function handleSwapClick(slotNumber) {
+  if (swapSourceSlot == null) {
+    swapSourceSlot = slotNumber;
+    updateSwapStatus();
+    renderSlots();
+    return;
+  }
+  if (swapSourceSlot === slotNumber) {
+    cancelSwap();
+    return;
+  }
+  const bar = currentBar();
+  if (!bar) {
+    return;
+  }
+  const from = swapSourceSlot - 1;
+  const to = slotNumber - 1;
+  const temp = bar.slots[from];
+  bar.slots[from] = bar.slots[to];
+  bar.slots[to] = temp;
+  const fromNum = swapSourceSlot;
+  swapSourceSlot = null;
+  updateSwapStatus();
+  renderSlots();
+  setStatus(`Swapped gems ${fromNum} and ${slotNumber}.`);
+}
+
 function renderSlots() {
   const bar = currentBar();
   if (!bar) {
@@ -675,13 +885,18 @@ function renderSlots() {
 }
 
 function renderSlot(slotNumber, spellId) {
+  const isSwapSource = swapSourceSlot === slotNumber;
+  const swapBtn = slotSwapBtnHtml(slotNumber);
+  const swapClass = isSwapSource ? " is-swap-source" : "";
+
   if (spellId == null) {
     return `
-      <article class="slot slot-empty" data-slot="${slotNumber}">
+      <article class="slot slot-empty target-kind-missing${swapClass}" data-slot="${slotNumber}">
         <span class="slot-number">${slotNumber}</span>
         <div class="slot-main">
           <div class="slot-body"><span class="slot-empty-label">Empty gem</span></div>
           <div class="slot-actions">
+            ${swapBtn}
             <button type="button" class="slot-btn slot-edit" data-slot="${slotNumber}">Add spell</button>
           </div>
         </div>
@@ -691,8 +906,11 @@ function renderSlot(slotNumber, spellId) {
   const entry = lookupSpell(spellId);
   const name = entry ? escapeHtml(entry.n) : `Unknown spell`;
   const icon = entry ? spellIconHtml(entry) : "";
+  const tip = entry ? spellTipForEntry(entry) : null;
+  const decor = entry ? targetDecor(entry, tip) : { kindClass: "target-kind-missing" };
+  const spellstrike = entry ? isSpellstrike(entry, tip) : false;
   const meta = entry
-    ? (entry.cat ? `${escapeHtml(entry.cat)}${entry.sub ? ` · ${escapeHtml(entry.sub)}` : ""}` : `ID ${escapeHtml(spellId)}`)
+    ? spellMetaLine(entry, tip)
     : `ID ${escapeHtml(spellId)} · not in spell index`;
   const currentLevels = entry
     ? classChipsHtml(entry, { scopeToSelection: false })
@@ -708,19 +926,32 @@ function renderSlot(slotNumber, spellId) {
   const upgradeBtn = canAutoUpgrade
     ? `<button type="button" class="slot-btn slot-upgrade-btn" data-slot="${slotNumber}" data-upgrade-id="${escapeHtml(upgradeInfo.upgrade.id)}">Upgrade</button>`
     : "";
+  const badges = entry
+    ? [spellstrike ? spellstrikeChipHtml() : ""].filter(Boolean).join("")
+    : "";
+  const slotClasses = [
+    entry ? "" : "slot-unknown",
+    decor.kindClass,
+    spellstrike ? "is-spellstrike" : "",
+    upgradeClass.trim(),
+    swapClass.trim(),
+  ].filter(Boolean).join(" ");
+  const targetTitle = entry ? escapeHtml(decor.title) : "";
   return `
-    <article class="slot${entry ? "" : " slot-unknown"}${upgradeClass}" data-slot="${slotNumber}">
+    <article class="slot ${slotClasses}" data-slot="${slotNumber}"${targetTitle ? ` title="${targetTitle}"` : ""}>
       <span class="slot-number">${slotNumber}</span>
       <div class="slot-main">
         <div class="slot-body">
           <div class="slot-current"${entry ? ` data-tip-spell="${escapeHtml(spellId)}"` : ""}>
             <div class="slot-title">${icon}<strong>${name}</strong></div>
             <span class="slot-meta">${meta}</span>
+            ${badges}
             ${currentLevels ? `<div class="slot-current-levels">${currentLevels}</div>` : ""}
           </div>
           ${upgradeRow}
         </div>
         <div class="slot-actions">
+          ${swapBtn}
           ${upgradeBtn}
           <button type="button" class="slot-btn slot-edit" data-slot="${slotNumber}">Change</button>
           <button type="button" class="slot-btn slot-clear" data-slot="${slotNumber}">Clear</button>
@@ -731,6 +962,7 @@ function renderSlot(slotNumber, spellId) {
 }
 
 function selectBar(index) {
+  cancelSwap();
   currentBarIndex = index;
   const bar = currentBar();
   if (bar) {
@@ -746,15 +978,27 @@ function selectBar(index) {
 
 function updateControls() {
   const hasBar = Boolean(currentBar());
-  downloadBtn.disabled = !model || sharedMode;
-  removeBarBtn.disabled = !hasBar || sharedMode;
-  addBarBtn.disabled = !model || sharedMode || bars.length >= EQLLoadout.MAX_LOADOUTS;
-  barNameInput.disabled = !hasBar;
+  const atCap = model && !previewMode ? EQLLoadout.nextFreeIndex(model, bars) == null : true;
+  const barLocked = sharedMode || previewMode;
+  downloadBtn.disabled = !model || sharedMode || previewMode;
+  removeBarBtn.disabled = !hasBar || barLocked;
+  addBarBtn.disabled = !model || barLocked || bars.length >= EQLLoadout.MAX_LOADOUTS || previewMode;
+  barNameInput.disabled = !hasBar || sharedMode;
   shareBtn.disabled = !hasBar;
+  if (cloneBarBtn) {
+    cloneBarBtn.disabled = !model || barLocked || !hasBar || atCap;
+  }
+  if (nextLevelBtn) {
+    nextLevelBtn.disabled = !isNextLevelValid();
+  }
+  updateNextLevelLabel();
+  if (!isPickerOpen()) {
+    updatePickerNewOnlyState();
+  }
 }
 
 function addBar() {
-  if (!model) {
+  if (!model || previewMode || sharedMode) {
     return;
   }
   const index = EQLLoadout.nextFreeIndex(model, bars);
@@ -771,6 +1015,35 @@ function addBar() {
   currentBarIndex = index;
   selectBar(index);
   setStatus(`Added bar ${index}.`);
+}
+
+function cloneBar() {
+  if (!model || sharedMode || previewMode) {
+    return;
+  }
+  const source = currentBar();
+  if (!source) {
+    return;
+  }
+  const index = EQLLoadout.nextFreeIndex(model, bars);
+  if (index == null) {
+    setStatus(`All ${EQLLoadout.MAX_LOADOUTS} loadout slots are in use.`, { error: true });
+    return;
+  }
+  const existingNames = bars.map((bar) => bar.name || "");
+  const name = EQLSpellMeta.uniqueCloneName(
+    source.name || `Saved bar ${source.index}`,
+    existingNames
+  );
+  const bar = {
+    index,
+    name,
+    slots: source.slots.slice().map((id) => (id == null ? null : id)),
+  };
+  bars.push(bar);
+  bars.sort((a, b) => a.index - b.index);
+  selectBar(index);
+  setStatus(`Cloned bar as “${name}”.`);
 }
 
 function removeBar() {
@@ -798,11 +1071,40 @@ function openPicker(slotNumber) {
   if (!bar) {
     return;
   }
+  cancelSwap();
+  pickerMode = "assign";
   pickerSlot = slotNumber;
   pickerTitle.textContent = `Choose a spell for gem ${slotNumber}`;
   pickerSearch.value = "";
   populateCategoryFilter();
   renderPickerScope();
+  updatePickerNewOnlyState();
+  renderPickerResults();
+  picker.classList.remove("hidden");
+  document.body.classList.add("picker-open");
+  if (window.EQLFocusTrap) {
+    EQLFocusTrap.activate(picker.querySelector(".picker-dialog") || picker, {
+      initialFocus: pickerSearch,
+      onEscape: closePicker,
+    });
+  } else {
+    window.setTimeout(() => pickerSearch.focus(), 30);
+  }
+}
+
+function openNextLevelPicker() {
+  if (!isNextLevelValid()) {
+    return;
+  }
+  cancelSwap();
+  pickerMode = "nextLevel";
+  pickerSlot = null;
+  const levelN = nextLevelNumber();
+  pickerTitle.textContent = `Spells learned at level ${levelN}`;
+  pickerSearch.value = "";
+  populateCategoryFilter();
+  renderPickerScope();
+  updatePickerNewOnlyState();
   renderPickerResults();
   picker.classList.remove("hidden");
   document.body.classList.add("picker-open");
@@ -820,6 +1122,7 @@ function closePicker() {
   picker.classList.add("hidden");
   document.body.classList.remove("picker-open");
   pickerSlot = null;
+  pickerMode = "assign";
   hideSpellTip();
   if (window.EQLFocusTrap) {
     EQLFocusTrap.deactivate();
@@ -827,6 +1130,16 @@ function closePicker() {
 }
 
 function renderPickerScope() {
+  if (pickerMode === "nextLevel") {
+    const levelN = nextLevelNumber();
+    if (selectedClasses.length) {
+      const names = selectedClasses.map((code) => CLASS_NAMES[code] || code).join(", ");
+      pickerScope.textContent = `Spells ${names} learn at level ${levelN}. Browse only — pick a gem and use Change to assign.`;
+    } else {
+      pickerScope.textContent = `Spells any class learns at level ${levelN}. Pick your classes above to narrow this down. Browse only.`;
+    }
+    return;
+  }
   const levelNote = playerLevel > 0 ? ` · level ${playerLevel} or lower` : "";
   if (selectedClasses.length) {
     const names = selectedClasses.map((code) => CLASS_NAMES[code] || code).join(", ");
@@ -836,20 +1149,22 @@ function renderPickerScope() {
   }
 }
 
+function pickerSpellPool() {
+  return pickerMode === "nextLevel" ? buildNextLevelSpellList() : candidateSpells;
+}
+
 function populateCategoryFilter() {
-  const cats = new Set();
-  for (const entry of candidateSpells) {
-    cats.add(entry.cat || "Uncategorized");
+  const pool = pickerSpellPool();
+  const familiesPresent = new Set();
+  for (const entry of pool) {
+    const tip = spellTipForEntry(entry);
+    familiesPresent.add(EQLSpellMeta.getSpellFamily(entry, tip));
   }
-  const sorted = [...cats].sort((a, b) => {
-    if (a === "Uncategorized") return 1;
-    if (b === "Uncategorized") return -1;
-    return a.localeCompare(b, undefined, { sensitivity: "base" });
-  });
+  const sorted = EQLSpellMeta.FAMILIES.filter((family) => familiesPresent.has(family));
   const prev = pickerCat.value;
   pickerCat.innerHTML =
-    `<option value="">All categories</option>` +
-    sorted.map((cat) => `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`).join("");
+    `<option value="">All families</option>` +
+    sorted.map((family) => `<option value="${escapeHtml(family)}">${escapeHtml(family)}</option>`).join("");
   if (prev && sorted.includes(prev)) {
     pickerCat.value = prev;
   }
@@ -865,15 +1180,23 @@ function equippedSpellIds() {
 
 function matchingSpells() {
   const query = pickerSearch.value.trim().toLowerCase();
-  const catFilter = pickerCat.value;
+  const familyFilter = pickerCat.value;
   const numeric = /^\d+$/.test(query);
+  const newOnly = pickerNewOnly?.checked && canUseNewOnlyFilter();
+  const pool = pickerSpellPool();
   const out = [];
-  for (const entry of candidateSpells) {
-    if (playerLevel > 0 && scopeLevel(entry) > playerLevel) {
+  for (const entry of pool) {
+    if (pickerMode !== "nextLevel" && playerLevel > 0 && scopeLevel(entry) > playerLevel) {
       continue;
     }
-    if (catFilter && (entry.cat || "Uncategorized") !== catFilter) {
+    if (newOnly && !isSpellNew(entry)) {
       continue;
+    }
+    if (familyFilter) {
+      const tip = spellTipForEntry(entry);
+      if (EQLSpellMeta.getSpellFamily(entry, tip) !== familyFilter) {
+        continue;
+      }
     }
     if (query) {
       const nameHit = entry.n.toLowerCase().includes(query);
@@ -883,11 +1206,79 @@ function matchingSpells() {
       }
     }
     out.push(entry);
-    if (out.length >= MAX_RESULTS + 1) {
-      break;
-    }
   }
+  out.sort((a, b) => {
+    const tipA = spellTipForEntry(a);
+    const tipB = spellTipForEntry(b);
+    if (familyFilter) {
+      const subCmp = spellSubcategory(a, tipA).localeCompare(
+        spellSubcategory(b, tipB),
+        undefined,
+        { sensitivity: "base" }
+      );
+      if (subCmp !== 0) {
+        return subCmp;
+      }
+    } else {
+      const famCmp = EQLSpellMeta.getSpellFamily(a, tipA).localeCompare(
+        EQLSpellMeta.getSpellFamily(b, tipB),
+        undefined,
+        { sensitivity: "base" }
+      );
+      if (famCmp !== 0) {
+        return famCmp;
+      }
+    }
+    const la = scopeLevel(a);
+    const lb = scopeLevel(b);
+    if (la !== lb) {
+      return la - lb;
+    }
+    return a.n.localeCompare(b.n, undefined, { sensitivity: "base" });
+  });
   return out;
+}
+
+function spellSubcategory(entry, tip = null) {
+  const t = tip ?? spellTipForEntry(entry);
+  const sub = String(entry?.sub || "").trim();
+  if (sub) {
+    return sub;
+  }
+  return EQLSpellMeta.getSpellVariant(entry, t) || "General";
+}
+
+function pickerRowHtml(entry, equipped, { hideFamily = false } = {}) {
+  const tip = spellTipForEntry(entry);
+  const decor = targetDecor(entry, tip);
+  const spellstrike = isSpellstrike(entry, tip);
+  const onBar = equipped.has(entry.id);
+  const family = EQLSpellMeta.getSpellFamily(entry, tip);
+  const variant = EQLSpellMeta.getSpellVariant(entry, tip);
+  const meta = hideFamily
+    ? escapeHtml(variant)
+    : `${escapeHtml(family)} · ${escapeHtml(variant)}`;
+  const equippedLabel = onBar ? `<span class="picker-equipped">On bar</span>` : "";
+  const rowClasses = [
+    onBar ? "is-equipped" : "",
+    decor.kindClass,
+    spellstrike ? "is-spellstrike" : "",
+  ].filter(Boolean).join(" ");
+  const badges = [
+    spellstrike ? spellstrikeChipHtml() : "",
+    equippedLabel,
+  ].filter(Boolean).join("");
+  return `
+    <button type="button" class="picker-row ${rowClasses}" data-id="${entry.id}" data-tip-spell="${entry.id}" title="${escapeHtml(
+      onBar ? "Already on this bar" : decor.title
+    )}">
+      ${spellIconHtml(entry)}
+      <span class="picker-name">${escapeHtml(entry.n)}</span>
+      <span class="picker-sub">${meta}</span>
+      ${badges}
+      ${classChipsHtml(entry, { scopeToSelection: true, wrapperClass: "picker-classes" })}
+    </button>
+  `;
 }
 
 function renderPickerResults() {
@@ -895,36 +1286,60 @@ function renderPickerResults() {
   const capped = results.length > MAX_RESULTS;
   const shown = capped ? results.slice(0, MAX_RESULTS) : results;
   const equipped = equippedSpellIds();
+  const familyFilter = pickerCat.value;
 
   if (!shown.length) {
-    pickerResults.innerHTML = `<p class="picker-empty">No spells match. Try a different search${
-      selectedClasses.length ? " or class selection" : ""
-    }.</p>`;
+    const hint =
+      pickerMode === "nextLevel"
+        ? " or class selection"
+        : selectedClasses.length
+          ? " or class selection"
+          : "";
+    pickerResults.innerHTML = `<p class="picker-empty">No spells match. Try a different search${hint}.</p>`;
     return;
   }
 
   let html = "";
-  let lastCat = null;
-  for (const entry of shown) {
-    const cat = entry.cat || "Uncategorized";
-    if (cat !== lastCat) {
-      html += `<div class="picker-group">${escapeHtml(cat)}</div>`;
-      lastCat = cat;
+  if (familyFilter) {
+    const bySub = new Map();
+    for (const entry of shown) {
+      const tip = spellTipForEntry(entry);
+      const sub = spellSubcategory(entry, tip);
+      if (!bySub.has(sub)) {
+        bySub.set(sub, []);
+      }
+      bySub.get(sub).push(entry);
     }
-    const onBar = equipped.has(entry.id);
-    const sub = entry.sub ? `<span class="picker-sub">${escapeHtml(entry.sub)}</span>` : "";
-    const equippedLabel = onBar ? `<span class="picker-equipped">On bar</span>` : "";
-    html += `
-      <button type="button" class="picker-row${onBar ? " is-equipped" : ""}" data-id="${entry.id}" data-tip-spell="${entry.id}"${
-        onBar ? ' title="Already on this bar"' : ""
-      }>
-        ${spellIconHtml(entry)}
-        <span class="picker-name">${escapeHtml(entry.n)}</span>
-        ${sub}
-        ${equippedLabel}
-        ${classChipsHtml(entry, { wrapperClass: "picker-classes" })}
-      </button>
-    `;
+    const subKeys = [...bySub.keys()].sort((a, b) =>
+      a.localeCompare(b, undefined, { sensitivity: "base" })
+    );
+    for (const sub of subKeys) {
+      const group = bySub.get(sub);
+      html += `<div class="picker-group">${escapeHtml(sub)}</div>`;
+      for (const entry of group) {
+        html += pickerRowHtml(entry, equipped, { hideFamily: true });
+      }
+    }
+  } else {
+    const byFamily = new Map();
+    for (const entry of shown) {
+      const tip = spellTipForEntry(entry);
+      const family = EQLSpellMeta.getSpellFamily(entry, tip);
+      if (!byFamily.has(family)) {
+        byFamily.set(family, []);
+      }
+      byFamily.get(family).push(entry);
+    }
+    for (const family of EQLSpellMeta.FAMILIES) {
+      const group = byFamily.get(family);
+      if (!group?.length) {
+        continue;
+      }
+      html += `<div class="picker-group">${escapeHtml(family)}</div>`;
+      for (const entry of group) {
+        html += pickerRowHtml(entry, equipped);
+      }
+    }
   }
   if (capped) {
     html += `<p class="picker-more">Showing first ${MAX_RESULTS}. Narrow your search to see more.</p>`;
@@ -934,7 +1349,7 @@ function renderPickerResults() {
 
 function assignSpell(spellId) {
   const bar = currentBar();
-  if (!bar || pickerSlot == null) {
+  if (!bar || pickerSlot == null || pickerMode !== "assign") {
     return;
   }
   bar.slots[pickerSlot - 1] = spellId;
@@ -970,6 +1385,7 @@ function applyUpgrade(slotNumber, upgradeId) {
 function loadFromText(text, filename) {
   clearShareHash();
   sharedMode = false;
+  previewMode = false;
   model = EQLLoadout.parse(text, filename);
   bars = EQLLoadout.activeBars(model);
   sourceFileName = filename || "loadout.ini";
@@ -1004,7 +1420,8 @@ async function readFile(file) {
 }
 
 function downloadZip() {
-  if (!model) {
+  if (!model || previewMode || sharedMode) {
+    setStatus("Download needs a loaded loadout file.", { error: true });
     return Promise.resolve();
   }
   if (typeof JSZip === "undefined") {
@@ -1047,6 +1464,7 @@ function onFileInputChange() {
 async function boot() {
   tipEnabled = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   renderClassChips();
+  updateControls();
   try {
     const bust =
       (document.body && document.body.dataset && document.body.dataset.build) || "";
@@ -1054,7 +1472,13 @@ async function boot() {
     const spellUrl = (window.EQLDom ? window.EQLDom.siteUrl("data/spells.json") : "../data/spells.json") + q;
     const tipUrl =
       (window.EQLDom ? window.EQLDom.siteUrl("data/spell_tooltips.json") : "../data/spell_tooltips.json") + q;
-    const [spellResponse, tipResponse] = await Promise.all([fetch(spellUrl), fetch(tipUrl)]);
+    const overridesUrl =
+      (window.EQLDom ? window.EQLDom.siteUrl("data/spell_overrides.json") : "../data/spell_overrides.json") + q;
+    const [spellResponse, tipResponse, overridesResponse] = await Promise.all([
+      fetch(spellUrl),
+      fetch(tipUrl),
+      fetch(overridesUrl),
+    ]);
     if (!spellResponse.ok) {
       throw new Error(`Could not load spell index (${spellResponse.status}).`);
     }
@@ -1064,6 +1488,9 @@ async function boot() {
     if (tipResponse.ok) {
       tipDb = await tipResponse.json();
       tipDb.spells = tipDb.spells || {};
+    }
+    if (overridesResponse.ok) {
+      EQLSpellMeta.setOverrides(await overridesResponse.json());
     }
     buildSpellArray();
     rebuildCandidates();
@@ -1080,6 +1507,9 @@ uploadBtn.addEventListener("click", () => {
   replaceFileInput();
   fileInput.click();
 });
+if (previewOnlyBtn) {
+  previewOnlyBtn.addEventListener("click", startPreviewOnly);
+}
 fileInput.addEventListener("change", onFileInputChange);
 
 uploadDrop.addEventListener("dragover", (event) => {
@@ -1103,8 +1533,11 @@ classChipRow.addEventListener("click", (event) => {
 playerLevelInput.addEventListener("input", () => {
   const n = Number.parseInt(playerLevelInput.value, 10);
   playerLevel = Number.isFinite(n) && n > 0 ? Math.min(n, MAX_LEVEL) : 0;
+  updateControls();
   if (isPickerOpen()) {
     renderPickerScope();
+    updatePickerNewOnlyState();
+    populateCategoryFilter();
     renderPickerResults();
   }
   if (bars.length) {
@@ -1121,7 +1554,13 @@ barNameInput.addEventListener("input", () => {
   }
 });
 addBarBtn.addEventListener("click", addBar);
+if (cloneBarBtn) {
+  cloneBarBtn.addEventListener("click", cloneBar);
+}
 removeBarBtn.addEventListener("click", removeBar);
+if (nextLevelBtn) {
+  nextLevelBtn.addEventListener("click", openNextLevelPicker);
+}
 shareBtn.addEventListener("click", () => {
   copyShareLink().catch((error) => setStatus(error.message, { error: true }));
 });
@@ -1136,9 +1575,14 @@ window.addEventListener("hashchange", () => {
 });
 
 slotGrid.addEventListener("click", (event) => {
-  const upgradeBtn = event.target.closest(".slot-upgrade-btn");
-  if (upgradeBtn) {
-    applyUpgrade(Number(upgradeBtn.dataset.slot), upgradeBtn.dataset.upgradeId);
+  const swapButton = event.target.closest(".slot-swap");
+  if (swapButton) {
+    handleSwapClick(Number(swapButton.dataset.slot));
+    return;
+  }
+  const upgradeBtnEl = event.target.closest(".slot-upgrade-btn");
+  if (upgradeBtnEl) {
+    applyUpgrade(Number(upgradeBtnEl.dataset.slot), upgradeBtnEl.dataset.upgradeId);
     return;
   }
   const editBtn = event.target.closest(".slot-edit");
@@ -1152,6 +1596,14 @@ slotGrid.addEventListener("click", (event) => {
   }
 });
 
+if (swapStatus) {
+  swapStatus.addEventListener("click", (event) => {
+    if (event.target.closest(".swap-cancel")) {
+      cancelSwap();
+    }
+  });
+}
+
 pickerClose.addEventListener("click", closePicker);
 picker.addEventListener("click", (event) => {
   if (event.target === picker) {
@@ -1160,15 +1612,27 @@ picker.addEventListener("click", (event) => {
 });
 pickerSearch.addEventListener("input", renderPickerResults);
 pickerCat.addEventListener("change", renderPickerResults);
+if (pickerNewOnly) {
+  pickerNewOnly.addEventListener("change", renderPickerResults);
+}
 pickerResults.addEventListener("click", (event) => {
   const row = event.target.closest(".picker-row");
-  if (row) {
+  if (row && pickerMode === "assign") {
     assignSpell(Number(row.dataset.id));
   }
 });
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && isPickerOpen() && !window.EQLFocusTrap) {
-    closePicker();
+  if (event.key !== "Escape") {
+    return;
+  }
+  if (isPickerOpen()) {
+    if (!window.EQLFocusTrap) {
+      closePicker();
+    }
+    return;
+  }
+  if (swapSourceSlot != null) {
+    cancelSwap();
   }
 });
 

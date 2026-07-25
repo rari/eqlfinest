@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   
-  <script src="/eqlfinest/assets/js/site-return.js?v=f9cbfb41176a"></script>
+  <script src="/eqlfinest/assets/js/site-return.js?v=f13366d81d68"></script>
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#070b12">
@@ -48,13 +48,13 @@
   <link rel="preload" href="/eqlfinest/assets/fonts/source-sans-3-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/eqlfinest/assets/img/hero-texture.webp" as="image" type="image/webp" fetchpriority="high">
   
-  <link rel="stylesheet" href="/eqlfinest/assets/css/site.css?v=f9cbfb41176a">
+  <link rel="stylesheet" href="/eqlfinest/assets/css/site.css?v=f13366d81d68">
   
-  <link rel="stylesheet" href="/eqlfinest/assets/css/tools/spell-bars.css?v=f9cbfb41176a">
+  <link rel="stylesheet" href="/eqlfinest/assets/css/tools/spell-bars.css?v=f13366d81d68">
   
   
   
-  <link rel="preload" href="/eqlfinest/assets/img/class-sprite.png?v=f9cbfb41176a" as="image">
+  <link rel="preload" href="/eqlfinest/assets/img/class-sprite.png?v=f13366d81d68" as="image">
   
   
   
@@ -82,7 +82,7 @@
   
   
 </head>
-<body class="has-site-header" data-base="/eqlfinest/" data-build="f9cbfb41176a" data-nav="spell-bars">
+<body class="has-site-header" data-base="/eqlfinest/" data-build="f13366d81d68" data-nav="spell-bars">
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header">
     <div class="site-header-inner">
@@ -127,6 +127,7 @@
         <p class="tool-privacy">Your loadout stays in this browser. Nothing is uploaded.</p>
         <div class="upload-actions">
           <button type="button" class="upload-btn" id="upload-btn">Choose file</button>
+          <button type="button" class="secondary-btn" id="preview-only-btn">Preview only</button>
         </div>
       </div>
     </section>
@@ -143,10 +144,15 @@
             <span class="class-panel-title">Your level</span>
             <span class="class-panel-hint">(Optional) Hide spells above this level in the spell chooser.</span>
           </div>
-          <label class="field level-field">
-            <span class="sr-only">Your level</span>
-            <input type="number" id="player-level" min="1" max="50" step="1" inputmode="numeric" autocomplete="off" placeholder="e.g. 50">
-          </label>
+          <div class="level-row">
+            <label class="field level-field">
+              <span class="sr-only">Your level</span>
+              <input type="number" id="player-level" min="1" max="50" step="1" inputmode="numeric" autocomplete="off" placeholder="e.g. 50">
+            </label>
+            <button type="button" class="secondary-btn" id="next-level-btn" disabled>
+              <span id="next-level-btn-label">Show level 2 spells</span>
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -162,6 +168,10 @@
           <button type="button" class="secondary-btn" id="add-bar-btn">
             <span>Add bar</span>
             <span class="btn-icon" aria-hidden="true">+</span>
+          </button>
+          <button type="button" class="secondary-btn" id="clone-bar-btn" disabled>
+            <span>Clone bar</span>
+            <span class="btn-icon" aria-hidden="true">⧉</span>
           </button>
           <button type="button" class="secondary-btn danger-btn" id="remove-bar-btn">
             <span>Remove bar</span>
@@ -182,6 +192,18 @@
         <span>Bar name</span>
         <input type="text" id="bar-name-input" maxlength="64" autocomplete="off" placeholder="Bar name">
       </label>
+
+      <div class="target-legend" aria-label="Spell target legend">
+        <span class="target-legend-title">Targets</span>
+        <span class="target-legend-item target-kind-single" title="Cast on your current target">Target</span>
+        <span class="target-legend-item target-kind-self" title="Self-only">Self</span>
+        <span class="target-legend-item target-kind-summon" title="Summons an item or effect">Summon</span>
+        <span class="target-legend-item target-kind-targeted_ae" title="Target-centered area effect">Target AE</span>
+        <span class="target-legend-item target-kind-pbae" title="Caster-centered area effect (PBAE)">PB AE</span>
+        <span class="target-legend-item target-kind-rain" title="Rain">Rain</span>
+        <span class="target-legend-item target-kind-group" title="Group spell">Group</span>
+      </div>
+      <p id="swap-status" class="swap-status hidden" role="status"></p>
 
       <div id="slot-grid" class="slot-grid"></div>
     </section>
@@ -235,6 +257,10 @@
           <span class="sr-only">Category</span>
           <select id="picker-cat"></select>
         </label>
+        <label class="picker-toggle" id="picker-new-only-wrap">
+          <input type="checkbox" id="picker-new-only" disabled>
+          <span>New spells only</span>
+        </label>
       </div>
       <p id="picker-scope" class="picker-scope"></p>
       <div id="picker-results" class="picker-results"></div>
@@ -270,19 +296,21 @@
   </footer>
 
   
-  <script src="/eqlfinest/assets/js/vendor/jszip.min.js?v=f9cbfb41176a"></script>
+  <script src="/eqlfinest/assets/js/vendor/jszip.min.js?v=f13366d81d68"></script>
   
-  <script src="/eqlfinest/assets/js/dom.js?v=f9cbfb41176a"></script>
+  <script src="/eqlfinest/assets/js/dom.js?v=f13366d81d68"></script>
   
-  <script src="/eqlfinest/assets/js/site.js?v=f9cbfb41176a"></script>
+  <script src="/eqlfinest/assets/js/site.js?v=f13366d81d68"></script>
   
-  <script src="/eqlfinest/assets/js/toast.js?v=f9cbfb41176a"></script>
+  <script src="/eqlfinest/assets/js/toast.js?v=f13366d81d68"></script>
   
-  <script src="/eqlfinest/assets/js/focus-trap.js?v=f9cbfb41176a"></script>
+  <script src="/eqlfinest/assets/js/focus-trap.js?v=f13366d81d68"></script>
   
-  <script src="/eqlfinest/assets/js/tools/spell-bars/loadout-io.js?v=f9cbfb41176a"></script>
+  <script src="/eqlfinest/assets/js/tools/spell-bars/loadout-io.js?v=f13366d81d68"></script>
   
-  <script src="/eqlfinest/assets/js/tools/spell-bars/app.js?v=f9cbfb41176a"></script>
+  <script src="/eqlfinest/assets/js/tools/spell-bars/spell-meta.js?v=f13366d81d68"></script>
+  
+  <script src="/eqlfinest/assets/js/tools/spell-bars/app.js?v=f13366d81d68"></script>
   
 </body>
 </html>
