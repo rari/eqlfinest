@@ -140,20 +140,32 @@ function targetDecor(entry, tip = null) {
   };
 }
 
-function spellstrikeChipHtml() {
-  return `<span class="spellstrike-chip">Spellstrike</span>`;
+function spellBladeChipHtml() {
+  return `<span class="spellblade-chip">Spellblade</span>`;
 }
 
 function spellMetaLine(entry, tip = null) {
-  const t = tip ?? spellTipForEntry(entry);
-  const family = EQLSpellMeta.getSpellFamily(entry, t);
-  const variant = EQLSpellMeta.getSpellVariant(entry, t);
-  return `${escapeHtml(family)} · ${escapeHtml(variant)}`;
+  const category = spellCategory(entry);
+  const subcategory = spellSubcategory(entry, tip);
+  if (category && subcategory && subcategory !== "General") {
+    return `${escapeHtml(category)} · ${escapeHtml(subcategory)}`;
+  }
+  if (category) {
+    return escapeHtml(category);
+  }
+  if (subcategory && subcategory !== "General") {
+    return escapeHtml(subcategory);
+  }
+  return "Uncategorized";
 }
 
-function isSpellstrike(entry, tip = null) {
+/** Spellblade marking only applies when assigning / showing gem slot 1. */
+function isSpellBlade(entry, tip = null, slotNumber = null) {
+  if (Number(slotNumber) !== 1) {
+    return false;
+  }
   const t = tip ?? spellTipForEntry(entry);
-  return EQLSpellMeta.isSpellstrikeEligible(entry, t, selectedClasses);
+  return EQLSpellMeta.isSpellBladeEligible(entry, t);
 }
 
 function isNextLevelValid() {
@@ -339,7 +351,7 @@ function classChipIsOutOfReach(entry, code) {
   return classMismatch || levelTooHigh;
 }
 
-function upgradeRowHtml(entry, info = null) {
+function upgradeRowHtml(entry, info = null, slotNumber = null) {
   if (!entry) {
     return "";
   }
@@ -351,14 +363,14 @@ function upgradeRowHtml(entry, info = null) {
       markOutOfReach: true,
     });
     const tip = spellTipForEntry(upgrade);
-    const spellstrike = isSpellstrike(upgrade, tip);
+    const spellBlade = isSpellBlade(upgrade, tip, slotNumber);
     const tipAttr =
       upgrade.id != null
         ? ` data-tip-spell="${escapeHtml(upgrade.id)}"`
         : "";
-    const badges = spellstrike ? spellstrikeChipHtml() : "";
+    const badges = spellBlade ? spellBladeChipHtml() : "";
     return `
-      <div class="slot-upgrade has-next${spellstrike ? " is-spellstrike" : ""}"${tipAttr}>
+      <div class="slot-upgrade has-next${spellBlade ? " is-spellblade" : ""}"${tipAttr}>
         <span class="slot-upgrade-label">Next upgrade</span>
         <div class="slot-upgrade-title">${icon}<strong>${escapeHtml(upgrade.n)}</strong></div>
         ${badges}
@@ -908,7 +920,7 @@ function renderSlot(slotNumber, spellId) {
   const icon = entry ? spellIconHtml(entry) : "";
   const tip = entry ? spellTipForEntry(entry) : null;
   const decor = entry ? targetDecor(entry, tip) : { kindClass: "target-kind-missing" };
-  const spellstrike = entry ? isSpellstrike(entry, tip) : false;
+  const spellBlade = entry ? isSpellBlade(entry, tip, slotNumber) : false;
   const meta = entry
     ? spellMetaLine(entry, tip)
     : `ID ${escapeHtml(spellId)} · not in spell index`;
@@ -916,7 +928,7 @@ function renderSlot(slotNumber, spellId) {
     ? classChipsHtml(entry, { scopeToSelection: false })
     : "";
   const upgradeInfo = entry ? nextUpgrade(entry) : null;
-  const upgradeRow = entry ? upgradeRowHtml(entry, upgradeInfo) : "";
+  const upgradeRow = entry ? upgradeRowHtml(entry, upgradeInfo, slotNumber) : "";
   const upgradeClass = upgradeInfo?.upgrade
     ? " has-upgrade"
     : upgradeInfo?.isFinal
@@ -927,26 +939,28 @@ function renderSlot(slotNumber, spellId) {
     ? `<button type="button" class="slot-btn slot-upgrade-btn" data-slot="${slotNumber}" data-upgrade-id="${escapeHtml(upgradeInfo.upgrade.id)}">Upgrade</button>`
     : "";
   const badges = entry
-    ? [spellstrike ? spellstrikeChipHtml() : ""].filter(Boolean).join("")
+    ? [spellBlade ? spellBladeChipHtml() : ""].filter(Boolean).join("")
     : "";
+  const tagRow =
+    badges || currentLevels
+      ? `<div class="slot-current-tags">${badges}${currentLevels ? `<div class="slot-current-levels">${currentLevels}</div>` : ""}</div>`
+      : "";
   const slotClasses = [
     entry ? "" : "slot-unknown",
     decor.kindClass,
-    spellstrike ? "is-spellstrike" : "",
+    spellBlade ? "is-spellblade" : "",
     upgradeClass.trim(),
     swapClass.trim(),
   ].filter(Boolean).join(" ");
-  const targetTitle = entry ? escapeHtml(decor.title) : "";
   return `
-    <article class="slot ${slotClasses}" data-slot="${slotNumber}"${targetTitle ? ` title="${targetTitle}"` : ""}>
+    <article class="slot ${slotClasses}" data-slot="${slotNumber}">
       <span class="slot-number">${slotNumber}</span>
       <div class="slot-main">
         <div class="slot-body">
           <div class="slot-current"${entry ? ` data-tip-spell="${escapeHtml(spellId)}"` : ""}>
             <div class="slot-title">${icon}<strong>${name}</strong></div>
             <span class="slot-meta">${meta}</span>
-            ${badges}
-            ${currentLevels ? `<div class="slot-current-levels">${currentLevels}</div>` : ""}
+            ${tagRow}
           </div>
           ${upgradeRow}
         </div>
@@ -1155,16 +1169,17 @@ function pickerSpellPool() {
 
 function populateCategoryFilter() {
   const pool = pickerSpellPool();
-  const familiesPresent = new Set();
+  const categoriesPresent = new Set();
   for (const entry of pool) {
-    const tip = spellTipForEntry(entry);
-    familiesPresent.add(EQLSpellMeta.getSpellFamily(entry, tip));
+    categoriesPresent.add(spellCategory(entry));
   }
-  const sorted = EQLSpellMeta.FAMILIES.filter((family) => familiesPresent.has(family));
+  const sorted = [...categoriesPresent].sort((a, b) =>
+    a.localeCompare(b, undefined, { sensitivity: "base" })
+  );
   const prev = pickerCat.value;
   pickerCat.innerHTML =
-    `<option value="">All families</option>` +
-    sorted.map((family) => `<option value="${escapeHtml(family)}">${escapeHtml(family)}</option>`).join("");
+    `<option value="">All categories</option>` +
+    sorted.map((cat) => `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`).join("");
   if (prev && sorted.includes(prev)) {
     pickerCat.value = prev;
   }
@@ -1180,7 +1195,7 @@ function equippedSpellIds() {
 
 function matchingSpells() {
   const query = pickerSearch.value.trim().toLowerCase();
-  const familyFilter = pickerCat.value;
+  const categoryFilter = pickerCat.value;
   const numeric = /^\d+$/.test(query);
   const newOnly = pickerNewOnly?.checked && canUseNewOnlyFilter();
   const pool = pickerSpellPool();
@@ -1192,11 +1207,8 @@ function matchingSpells() {
     if (newOnly && !isSpellNew(entry)) {
       continue;
     }
-    if (familyFilter) {
-      const tip = spellTipForEntry(entry);
-      if (EQLSpellMeta.getSpellFamily(entry, tip) !== familyFilter) {
-        continue;
-      }
+    if (categoryFilter && spellCategory(entry) !== categoryFilter) {
+      continue;
     }
     if (query) {
       const nameHit = entry.n.toLowerCase().includes(query);
@@ -1210,7 +1222,7 @@ function matchingSpells() {
   out.sort((a, b) => {
     const tipA = spellTipForEntry(a);
     const tipB = spellTipForEntry(b);
-    if (familyFilter) {
+    if (categoryFilter) {
       const subCmp = spellSubcategory(a, tipA).localeCompare(
         spellSubcategory(b, tipB),
         undefined,
@@ -1220,58 +1232,61 @@ function matchingSpells() {
         return subCmp;
       }
     } else {
-      const famCmp = EQLSpellMeta.getSpellFamily(a, tipA).localeCompare(
-        EQLSpellMeta.getSpellFamily(b, tipB),
-        undefined,
-        { sensitivity: "base" }
-      );
-      if (famCmp !== 0) {
-        return famCmp;
+      const catCmp = spellCategory(a).localeCompare(spellCategory(b), undefined, {
+        sensitivity: "base",
+      });
+      if (catCmp !== 0) {
+        return catCmp;
       }
     }
     const la = scopeLevel(a);
     const lb = scopeLevel(b);
     if (la !== lb) {
-      return la - lb;
+      return lb - la;
     }
     return a.n.localeCompare(b.n, undefined, { sensitivity: "base" });
   });
   return out;
 }
 
+function spellCategory(entry) {
+  return String(entry?.cat || "").trim() || "Uncategorized";
+}
+
 function spellSubcategory(entry, tip = null) {
-  const t = tip ?? spellTipForEntry(entry);
   const sub = String(entry?.sub || "").trim();
   if (sub) {
     return sub;
   }
-  return EQLSpellMeta.getSpellVariant(entry, t) || "General";
+  return "General";
 }
 
-function pickerRowHtml(entry, equipped, { hideFamily = false } = {}) {
+function pickerRowHtml(entry, equipped, { hideCategory = false } = {}) {
   const tip = spellTipForEntry(entry);
   const decor = targetDecor(entry, tip);
-  const spellstrike = isSpellstrike(entry, tip);
+  const spellBlade = isSpellBlade(entry, tip, pickerSlot);
   const onBar = equipped.has(entry.id);
-  const family = EQLSpellMeta.getSpellFamily(entry, tip);
-  const variant = EQLSpellMeta.getSpellVariant(entry, tip);
-  const meta = hideFamily
-    ? escapeHtml(variant)
-    : `${escapeHtml(family)} · ${escapeHtml(variant)}`;
+  const category = spellCategory(entry);
+  const subcategory = spellSubcategory(entry, tip);
+  const meta = hideCategory
+    ? escapeHtml(subcategory)
+    : subcategory && subcategory !== "General"
+      ? `${escapeHtml(category)} · ${escapeHtml(subcategory)}`
+      : escapeHtml(category);
   const equippedLabel = onBar ? `<span class="picker-equipped">On bar</span>` : "";
   const rowClasses = [
     onBar ? "is-equipped" : "",
     decor.kindClass,
-    spellstrike ? "is-spellstrike" : "",
+    spellBlade ? "is-spellblade" : "",
   ].filter(Boolean).join(" ");
   const badges = [
-    spellstrike ? spellstrikeChipHtml() : "",
+    spellBlade ? spellBladeChipHtml() : "",
     equippedLabel,
   ].filter(Boolean).join("");
   return `
-    <button type="button" class="picker-row ${rowClasses}" data-id="${entry.id}" data-tip-spell="${entry.id}" title="${escapeHtml(
-      onBar ? "Already on this bar" : decor.title
-    )}">
+    <button type="button" class="picker-row ${rowClasses}" data-id="${entry.id}" data-tip-spell="${entry.id}"${
+      onBar ? ' title="Already on this bar"' : ""
+    }>
       ${spellIconHtml(entry)}
       <span class="picker-name">${escapeHtml(entry.n)}</span>
       <span class="picker-sub">${meta}</span>
@@ -1286,7 +1301,7 @@ function renderPickerResults() {
   const capped = results.length > MAX_RESULTS;
   const shown = capped ? results.slice(0, MAX_RESULTS) : results;
   const equipped = equippedSpellIds();
-  const familyFilter = pickerCat.value;
+  const categoryFilter = pickerCat.value;
 
   if (!shown.length) {
     const hint =
@@ -1300,7 +1315,7 @@ function renderPickerResults() {
   }
 
   let html = "";
-  if (familyFilter) {
+  if (categoryFilter) {
     const bySub = new Map();
     for (const entry of shown) {
       const tip = spellTipForEntry(entry);
@@ -1317,25 +1332,24 @@ function renderPickerResults() {
       const group = bySub.get(sub);
       html += `<div class="picker-group">${escapeHtml(sub)}</div>`;
       for (const entry of group) {
-        html += pickerRowHtml(entry, equipped, { hideFamily: true });
+        html += pickerRowHtml(entry, equipped, { hideCategory: true });
       }
     }
   } else {
-    const byFamily = new Map();
+    const byCategory = new Map();
     for (const entry of shown) {
-      const tip = spellTipForEntry(entry);
-      const family = EQLSpellMeta.getSpellFamily(entry, tip);
-      if (!byFamily.has(family)) {
-        byFamily.set(family, []);
+      const category = spellCategory(entry);
+      if (!byCategory.has(category)) {
+        byCategory.set(category, []);
       }
-      byFamily.get(family).push(entry);
+      byCategory.get(category).push(entry);
     }
-    for (const family of EQLSpellMeta.FAMILIES) {
-      const group = byFamily.get(family);
-      if (!group?.length) {
-        continue;
-      }
-      html += `<div class="picker-group">${escapeHtml(family)}</div>`;
+    const catKeys = [...byCategory.keys()].sort((a, b) =>
+      a.localeCompare(b, undefined, { sensitivity: "base" })
+    );
+    for (const category of catKeys) {
+      const group = byCategory.get(category);
+      html += `<div class="picker-group">${escapeHtml(category)}</div>`;
       for (const entry of group) {
         html += pickerRowHtml(entry, equipped);
       }

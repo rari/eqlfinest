@@ -39,11 +39,8 @@ const EQLSpellMeta = (() => {
     missing: "No target",
   };
 
-  const SPELLSTRIKE = {
-    classes: ["SHD", "PAL", "RNG", "BST"],
-    allowFamilies: new Set(["Direct Damage"]),
-    allowVariants: new Set(["Standard", "Stun"]),
-    denyVariants: new Set(["Rain", "Area effect", "Group", "Heal over time"]),
+  const SPELL_BLADE = {
+    // Gem-1 only (enforced by UI). Timing: max(reuse, recovery) ≤ cast time.
   };
 
   const CC_SUBS = new Set([
@@ -265,54 +262,33 @@ const EQLSpellMeta = (() => {
     return `${family}|${variant}|${line || nameLower(entry)}`;
   }
 
-  function selectedHasHybrid(selectedClasses) {
-    const list = Array.isArray(selectedClasses) ? selectedClasses : [];
-    return list.some((code) => SPELLSTRIKE.classes.includes(code));
+  function tipNumber(tip, key) {
+    const value = Number(tip?.[key]);
+    return Number.isFinite(value) ? value : null;
   }
 
-  function hybridCanCast(entry, selectedClasses) {
-    const list = Array.isArray(selectedClasses) ? selectedClasses : [];
-    const hybrids = list.filter((code) => SPELLSTRIKE.classes.includes(code));
-    if (!hybrids.length) {
+  /** Reuse/recovery cooldown must be ≤ cast time (gem-1 Spellblade rule). */
+  function hasSpellBladeTiming(tip) {
+    const cast = tipNumber(tip, "ct");
+    if (cast == null) {
       return false;
     }
-    return hybrids.some((code) => Number(entry?.c?.[code]) > 0);
+    const recovery = tipNumber(tip, "rv");
+    const reuse = tipNumber(tip, "rc");
+    const cooldown = Math.max(recovery ?? 0, reuse ?? 0);
+    return cooldown <= cast;
   }
 
-  function isSpellstrikeEligible(entry, tip, selectedClasses) {
+  function isSpellBladeEligible(entry, tip) {
     const ov = overrideFor(entry);
+    if (ov && Object.prototype.hasOwnProperty.call(ov, "spellblade")) {
+      return Boolean(ov.spellblade) && hasSpellBladeTiming(tip);
+    }
+    // Legacy override key from earlier "spellstrike" naming.
     if (ov && Object.prototype.hasOwnProperty.call(ov, "spellstrike")) {
-      if (!ov.spellstrike) {
-        return false;
-      }
-      return selectedHasHybrid(selectedClasses) && hybridCanCast(entry, selectedClasses);
+      return Boolean(ov.spellstrike) && hasSpellBladeTiming(tip);
     }
-    if (!selectedHasHybrid(selectedClasses) || !hybridCanCast(entry, selectedClasses)) {
-      return false;
-    }
-    const family = getSpellFamily(entry, tip);
-    const variant = getSpellVariant(entry, tip);
-    if (!SPELLSTRIKE.allowFamilies.has(family)) {
-      return false;
-    }
-    if (SPELLSTRIKE.denyVariants.has(variant)) {
-      return false;
-    }
-    if (variant !== "Standard" && variant !== "Stun" && !SPELLSTRIKE.allowVariants.has(variant)) {
-      return false;
-    }
-    const targetKind = getTargetKind(entry, tip);
-    if (
-      targetKind === "targeted_ae" ||
-      targetKind === "rain" ||
-      targetKind === "pbae" ||
-      targetKind === "self" ||
-      targetKind === "group" ||
-      targetKind === "summon"
-    ) {
-      return false;
-    }
-    return true;
+    return hasSpellBladeTiming(tip);
   }
 
   function uniqueCloneName(baseName, existingNames) {
@@ -333,13 +309,14 @@ const EQLSpellMeta = (() => {
     FAMILIES,
     TARGET_KINDS,
     TARGET_LABELS,
-    SPELLSTRIKE,
+    SPELL_BLADE,
     setOverrides,
     getSpellFamily,
     getSpellVariant,
     getSpellLineKey,
     getTargetKind,
-    isSpellstrikeEligible,
+    hasSpellBladeTiming,
+    isSpellBladeEligible,
     uniqueCloneName,
   };
 })();

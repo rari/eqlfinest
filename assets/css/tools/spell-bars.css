@@ -12,7 +12,7 @@
   --spell-target-group: #8b6bc9;
   --spell-target-unknown: #6e7580;
   --spell-target-missing: rgba(201, 162, 39, 0.18);
-  --spell-spellstrike: #f0d060;
+  --spell-spellblade: #f0d060;
 }
 
 .class-panel {
@@ -340,7 +340,7 @@
 .slot.target-kind-unknown { border-color: var(--spell-target-unknown); }
 .slot.target-kind-missing { border-color: var(--spell-target-missing); }
 
-.slot.is-spellstrike {
+.slot.is-spellblade {
   box-shadow: inset 0 0 0 1px rgba(240, 208, 96, 0.55), 0 0 0 1px rgba(240, 208, 96, 0.25);
   background: linear-gradient(180deg, rgba(240, 208, 96, 0.08), rgba(15, 21, 32, 0.55) 42%);
 }
@@ -1066,8 +1066,8 @@ body.picker-open {
   box-shadow: 0 0 0 1px rgba(120, 180, 140, 0.35);
 }
 
-.slot.is-spellstrike.has-upgrade,
-.slot.is-spellstrike.fully-upgraded {
+.slot.is-spellblade.has-upgrade,
+.slot.is-spellblade.fully-upgraded {
   box-shadow:
     inset 0 0 0 1px rgba(240, 208, 96, 0.55),
     0 0 0 1px rgba(240, 208, 96, 0.25);
@@ -1120,8 +1120,30 @@ body.picker-open {
   flex: 0 0 auto;
 }
 
+.slot-current-tags {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.45rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.slot-current-tags .spellblade-chip {
+  margin-top: 0;
+  flex: 0 0 auto;
+}
+
 .slot-current-levels {
   margin-top: 0.3rem;
+  min-width: 0;
+}
+
+.slot-current-tags .slot-current-levels {
+  margin-top: 0;
+  width: auto;
+  flex: 1 1 auto;
   min-width: 0;
 }
 
@@ -1136,16 +1158,21 @@ body.picker-open {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.28rem;
-  width: 100%;
   max-width: 100%;
-  grid-column: 1 / -1;
   overflow: visible;
+}
+
+.slot-current-levels .slot-class-pills,
+.slot-upgrade-levels .slot-class-pills {
+  width: 100%;
+}
+
+.slot-current-tags .slot-class-pills {
+  width: auto;
 }
 
 .slot-current-levels,
 .slot-upgrade-levels {
-  grid-column: 1 / -1;
-  width: 100%;
   min-width: 0;
 }
 
@@ -1154,7 +1181,7 @@ body.picker-open {
 }
 
 .slot-target-label,
-.spellstrike-chip {
+.spellblade-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
@@ -1173,9 +1200,9 @@ body.picker-open {
   opacity: 0.92;
 }
 
-.spellstrike-chip {
-  border: 1px solid var(--spell-spellstrike);
-  color: var(--spell-spellstrike);
+.spellblade-chip {
+  border: 1px solid var(--spell-spellblade);
+  color: var(--spell-spellblade);
   background: rgba(240, 208, 96, 0.12);
 }
 
@@ -1255,7 +1282,7 @@ body.picker-open {
 .picker-row.target-kind-unknown { border-left-color: var(--spell-target-unknown); }
 .picker-row.target-kind-missing { border-left-color: var(--spell-target-missing); }
 
-.picker-row.is-spellstrike {
+.picker-row.is-spellblade {
   background: rgba(240, 208, 96, 0.08);
 }
 

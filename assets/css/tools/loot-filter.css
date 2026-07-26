@@ -1,6 +1,10 @@
 /* === tools/loot-filter.css === */
 /* Loot Filter */
 
+html {
+  scroll-snap-type: y proximity;
+}
+
 .editor-panel {
   overflow: visible;
   margin-top: 0.9rem;
@@ -368,6 +372,8 @@
   background: rgba(7, 11, 18, 0.92);
   scrollbar-width: thin;
   scrollbar-color: rgba(201, 162, 39, 0.4) rgba(7, 11, 18, 0.35);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
   scroll-margin-top: var(--loot-table-sticky-top);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
 }
