@@ -519,6 +519,7 @@ function renderTipHtml(spellId) {
     tipLine("Cast", formatTipTime(tip?.ct)),
     tipLine("Recovery", formatTipTime(tip?.rv)),
     tipLine("Reuse", formatTipTime(tip?.rc)),
+    tipLine("Resist", tip?.rs),
     tipLine("Spell Line", tip?.ln),
     tipLine("Target", tip?.tg),
   ].join("");
@@ -965,9 +966,9 @@ function renderSlot(slotNumber, spellId) {
           ${upgradeRow}
         </div>
         <div class="slot-actions">
-          ${swapBtn}
-          ${upgradeBtn}
           <button type="button" class="slot-btn slot-edit" data-slot="${slotNumber}">Change</button>
+          ${upgradeBtn}
+          ${swapBtn}
           <button type="button" class="slot-btn slot-clear" data-slot="${slotNumber}">Clear</button>
         </div>
       </div>
