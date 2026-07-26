@@ -704,6 +704,7 @@ function encodeSharePayload(bar) {
   const payload = {
     n: bar.name || "Shared bar",
     s: (bar.slots || []).slice(0, SLOT_COUNT).map((id) => (id == null ? -1 : id)),
+    c: selectedClasses.slice(0, MAX_CLASSES),
   };
   while (payload.s.length < SLOT_COUNT) {
     payload.s.push(-1);
@@ -727,9 +728,23 @@ function decodeSharePayload(encoded) {
     while (slots.length < SLOT_COUNT) {
       slots.push(null);
     }
+    const classes = [];
+    if (Array.isArray(payload.c)) {
+      for (const raw of payload.c) {
+        const code = String(raw || "").trim().toUpperCase();
+        if (!CLASS_ORDER.includes(code) || classes.includes(code)) {
+          continue;
+        }
+        classes.push(code);
+        if (classes.length >= MAX_CLASSES) {
+          break;
+        }
+      }
+    }
     return {
       name: String(payload.n || "Shared bar").trim() || "Shared bar",
       slots,
+      classes,
     };
   } catch {
     return null;
@@ -757,6 +772,11 @@ function applySharedBar(decoded) {
   sourceFileName = "shared";
   bars = [{ index: 1, name: decoded.name, slots: decoded.slots.slice() }];
   currentBarIndex = 1;
+  if (Array.isArray(decoded.classes)) {
+    selectedClasses = decoded.classes.slice(0, MAX_CLASSES);
+    renderClassChips();
+    rebuildCandidates();
+  }
   editorPanel.classList.remove("hidden");
   cancelSwap();
   selectBar(1);
