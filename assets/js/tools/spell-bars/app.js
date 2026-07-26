@@ -159,13 +159,13 @@ function spellMetaLine(entry, tip = null) {
   return "Uncategorized";
 }
 
-/** Spellblade marking only applies when assigning / showing gem slot 1. */
+/** Spellblade: gem 1 + hybrid class selected + cooldown ≤ cast. */
 function isSpellBlade(entry, tip = null, slotNumber = null) {
   if (Number(slotNumber) !== 1) {
     return false;
   }
   const t = tip ?? spellTipForEntry(entry);
-  return EQLSpellMeta.isSpellBladeEligible(entry, t);
+  return EQLSpellMeta.isSpellBladeEligible(entry, t, selectedClasses);
 }
 
 function isNextLevelValid() {

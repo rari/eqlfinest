@@ -41,6 +41,8 @@ const EQLSpellMeta = (() => {
 
   const SPELL_BLADE = {
     // Gem-1 only (enforced by UI). Timing: max(reuse, recovery) ≤ cast time.
+    // Shown only when a hybrid is among the selected classes.
+    classes: ["PAL", "SHD", "RNG", "BRD"],
   };
 
   const CC_SUBS = new Set([
@@ -262,6 +264,11 @@ const EQLSpellMeta = (() => {
     return `${family}|${variant}|${line || nameLower(entry)}`;
   }
 
+  function selectedHasHybrid(selectedClasses) {
+    const list = Array.isArray(selectedClasses) ? selectedClasses : [];
+    return list.some((code) => SPELL_BLADE.classes.includes(String(code).toUpperCase()));
+  }
+
   function tipNumber(tip, key) {
     const value = Number(tip?.[key]);
     return Number.isFinite(value) ? value : null;
@@ -279,7 +286,10 @@ const EQLSpellMeta = (() => {
     return cooldown <= cast;
   }
 
-  function isSpellBladeEligible(entry, tip) {
+  function isSpellBladeEligible(entry, tip, selectedClasses) {
+    if (!selectedHasHybrid(selectedClasses)) {
+      return false;
+    }
     const ov = overrideFor(entry);
     if (ov && Object.prototype.hasOwnProperty.call(ov, "spellblade")) {
       return Boolean(ov.spellblade) && hasSpellBladeTiming(tip);
@@ -315,6 +325,7 @@ const EQLSpellMeta = (() => {
     getSpellVariant,
     getSpellLineKey,
     getTargetKind,
+    selectedHasHybrid,
     hasSpellBladeTiming,
     isSpellBladeEligible,
     uniqueCloneName,
