@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- hi from Rari - made this for personal use, but now you can use it too! -->
+<head>
+  <meta charset="UTF-8">
+  
+  <script src="/eqlfinest/assets/js/site-return.js?v=dev"></script>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070b12">
+  
+  <meta name="robots" content="index,follow">
+  
+  
+  <meta name="description" content="Plan Plane of Sky class set turn-ins from your inventory export and Wind Rune currency counts.">
+  
+  <meta name="author" content="Rari">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; img-src 'self' data: blob:; font-src 'self'; style-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; child-src 'self' blob:">
+  <link rel="icon" href="/eqlfinest/favicon.ico">
+  <link rel="apple-touch-icon" href="/eqlfinest/assets/img/apple-touch-icon.png">
+  
+  <meta property="og:site_name" content="Antonica’s Finest">
+  <meta property="og:title" content="Plane of Sky Sets | Antonica’s Finest">
+  <meta property="og:description" content="Plan Sky set turn-ins from your inventory.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rari.github.io/eqlfinest/sky-sets/">
+  
+  <meta property="og:image" content="https://rari.github.io/eqlfinest/assets/img/og/sky-sets.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Plane of Sky Sets — plan Sky set turn-ins from your inventory">
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Plane of Sky Sets | Antonica’s Finest">
+  <meta name="twitter:description" content="Plan Sky set turn-ins from your inventory.">
+  
+  <meta name="twitter:image" content="https://rari.github.io/eqlfinest/assets/img/og/sky-sets.jpg">
+  <meta name="twitter:image:alt" content="Plane of Sky Sets — plan Sky set turn-ins from your inventory">
+  
+  
+  <title>Plane of Sky Sets | Antonica’s Finest</title>
+  
+  <link rel="canonical" href="https://rari.github.io/eqlfinest/sky-sets/">
+  
+  <link rel="preload" href="/eqlfinest/assets/fonts/cinzel-500.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/eqlfinest/assets/fonts/cinzel-700.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/eqlfinest/assets/fonts/source-sans-3-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/eqlfinest/assets/img/hero-texture.webp" as="image" type="image/webp" fetchpriority="high">
+  
+  <link rel="stylesheet" href="/eqlfinest/assets/css/site.css?v=dev">
+  
+  <link rel="stylesheet" href="/eqlfinest/assets/css/tools/sky-sets.css?v=dev">
+  
+  
+  
+  
+  
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Plane of Sky Sets",
+  "url": "https://rari.github.io/eqlfinest/sky-sets/",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Antonica’s Finest",
+    "url": "https://rari.github.io/eqlfinest/"
+  },
+  "description": "Plan Plane of Sky class set turn-ins from an EverQuest Legends inventory export.",
+  "author": { "@type": "Person", "name": "Rari" },
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+
+  </script>
+  
+  
+</head>
+<body class="has-site-header" data-base="/eqlfinest/" data-build="dev" data-nav="sky-sets">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <nav class="site-nav" aria-label="Quick tools">
+        
+        <a class="site-nav-link" href="/eqlfinest/traveler/">Travel Guide</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/map-viewer/">Map Viewer</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/loot-filter/">Loot Filter</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/spell-bars/">Spell Bars</a>
+        
+        <a class="site-nav-link" href="/eqlfinest/sky-sets/" aria-current="page">Sky Sets</a>
+        
+      </nav>
+    </div>
+  </header>
+
+  <div class="stars" aria-hidden="true"></div>
+
+<main id="main">
+  <div class="hero">
+    <img class="hero-texture" src="/eqlfinest/assets/img/hero-texture.webp" alt="" width="1920" height="1080" decoding="async" fetchpriority="high" aria-hidden="true">
+    <div class="hero-veil" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <a class="brand" href="/eqlfinest/">Antonica’s Finest</a>
+      <h1>Plane of Sky Sets</h1>
+      <p class="subtitle">Plan Sky set turn-ins from your inventory</p>
+    </div>
+  </div>
+
+  <div class="shell">
+
+    <section class="upload-panel sky-import" aria-labelledby="importHeading">
+      <h2 id="importHeading" class="sr-only">Load inventory file</h2>
+
+      <div class="upload-drop" id="dropZone" role="region" aria-label="Inventory file drop zone">
+        <input id="fileInput" type="file" accept=".txt,text/plain" hidden>
+        <div class="upload-orb" aria-hidden="true">
+          <span class="upload-orb-ring"></span>
+          <span class="upload-orb-glyph">✦</span>
+        </div>
+        <strong class="upload-title">Drop your inventory export here</strong>
+        <span class="upload-hint"><code>Inventory.txt</code> from <code>/outputfile inventory</code></span>
+        <p class="tool-privacy">Your inventory stays in this browser. Nothing is uploaded.</p>
+        <div class="upload-actions">
+          <button type="button" class="upload-btn" id="upload-btn">Choose file</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="analysisPanel" class="analysis hidden" aria-live="polite">
+      <section id="runePanel" class="panel rune-panel" aria-labelledby="runeHeading">
+        <div class="step-heading">
+          <div>
+            <h2 id="runeHeading">Enter Wind Rune currency</h2>
+            <p>The inventory file cannot see Currency. Open Inventory &gt; Storage &gt; Currency and enter the Wind Rune counts below.</p>
+          </div>
+          <div class="rune-actions">
+            <span id="runeTotal" class="pill">0 runes entered</span>
+            <button id="clearRunes" class="sky-btn subtle" type="button">Clear counts</button>
+          </div>
+        </div>
+
+        <div class="keyboard-tip"><strong>Fast entry:</strong> click the first box, type a count, then press <kbd>Tab</kbd>.</div>
+        <div id="runeInputGrid" class="rune-input-grid"></div>
+        <div class="rune-footer">
+          <span>Results update as counts change.</span>
+        </div>
+      </section>
+
+      <section id="summaryPanel" class="panel summary-panel">
+        <div id="currencyWarning" class="currency-warning hidden" role="alert">
+          <strong>Enter your Wind Rune counts above before using the turn-in list.</strong>
+          <span>Currency is not included in the inventory export. Zero rune counts make every test look incomplete.</span>
+        </div>
+
+        <div class="step-heading">
+          <div>
+            <p id="fileLabel" class="eyebrow"></p>
+            <h2>Use the turn-in list</h2>
+          </div>
+          <div class="action-row">
+            <button id="printButton" class="sky-btn subtle" type="button">PDF list</button>
+            <button id="exportButton" class="sky-btn primary" type="button">Export text guide</button>
+          </div>
+        </div>
+
+        <div id="workflowMessage" class="workflow-message"></div>
+        <div id="summaryCards" class="summary-cards"></div>
+      </section>
+
+      <nav id="tabBar" class="tab-bar" aria-label="Analysis views">
+        <button class="tab active" data-tab="recommended" type="button">Turn in now</button>
+        <button class="tab" data-tab="ready" type="button">All complete sets</button>
+        <button class="tab" data-tab="near" type="button">Missing 1–2 pieces</button>
+        <button class="tab" data-tab="all" type="button">All class tests</button>
+        <button class="tab" data-tab="pieces" type="button">My Sky pieces</button>
+        <button class="tab" data-tab="runes" type="button">Rune use</button>
+      </nav>
+
+      <section id="resultsPanel" class="panel results-panel">
+        <div class="results-tools">
+          <label>Class
+            <select id="classFilter"><option value="all">All classes</option></select>
+          </label>
+          <label>Search
+            <input id="searchFilter" type="search" placeholder="item, test, reward, NPC">
+          </label>
+        </div>
+        <div id="results"></div>
+      </section>
+
+      <details class="panel advanced-settings">
+        <summary>
+          <strong>Optional: choose which classes receive shared pieces first</strong>
+          <span>Open this only when several complete tests compete for the same rune or item.</span>
+        </summary>
+        <div class="advanced-body">
+          <div class="panel-heading compact">
+            <div>
+              <h2>Class priority</h2>
+              <p>The Turn in now batch never spends the same rune or quest piece twice.</p>
+            </div>
+            <button id="resetPriorities" class="sky-btn subtle" type="button">Reset all to Normal</button>
+          </div>
+          <div class="control-row">
+            <label class="check-control"><input id="preferCompletion" type="checkbox" checked> Prefer classes with more rewards already completed</label>
+            <label class="check-control"><input id="includeConflicts" type="checkbox"> Include tests whose LORE reward is already owned</label>
+          </div>
+          <div id="priorityGrid" class="priority-grid"></div>
+        </div>
+      </details>
+    </section>
+
+    <section class="tool-guide" aria-labelledby="sky-guide-heading">
+      <h2 id="sky-guide-heading">How Plane of Sky Sets works</h2>
+      <p>
+        Match your inventory against the current Plane of Sky class tests, then build a
+        non-conflicting turn-in list once Wind Rune currency counts are entered.
+      </p>
+      <p class="tool-related">
+        Too much treasure, not enough bag space?
+        Tidy things up with our <a href="/eqlfinest/loot-filter/">loot filter</a>.
+      </p>
+      <h3>How to use</h3>
+      <ol>
+        <li>Move any Sky quest pieces you need out of Dragon’s Hoard first. That storage is not included in the inventory export.</li>
+        <li>In game, run <code>/outputfile inventory</code>.</li>
+        <li>Find <code>Inventory.txt</code> in your EverQuest Legends game folder and drop it above.</li>
+        <li>Open Inventory &gt; Storage &gt; Currency and enter your Wind Rune counts.</li>
+        <li>Follow the Turn in now list, or browse Missing 1–2 pieces / All class tests for planning.</li>
+        <li>Use PDF list or export a text guide when you are ready to turn in.</li>
+      </ol>
+    </section>
+
+    <div class="footer">
+      <p class="footer-line">
+        Find inventory export files in
+        <code>C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest Legends</code>
+      </p>
+    </div>
+  </div>
+</main>
+
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div class="site-footer-top">
+        <p class="site-footer-brand"><a class="site-footer-home" href="/eqlfinest/">Antonica’s Finest</a></p>
+        <nav class="site-footer-links" aria-label="Project links">
+          <a class="site-footer-link" href="https://github.com/rari/eqlfinest/blob/main/LICENSE">License</a>
+          <span class="site-footer-sep" aria-hidden="true">·</span>
+          <a class="site-footer-link" href="https://github.com/rari/eqlfinest" rel="noopener noreferrer" target="_blank">GitHub<span class="sr-only"> (opens in a new tab)</span></a>
+        </nav>
+      </div>
+      <p class="site-footer-line">Game files never leave your browser. Nothing is uploaded to our servers.</p>
+      <p class="site-footer-line">
+        <a class="site-footer-link" href="https://github.com/rari/eqlfinest/blob/main/LICENSE">CC0 1.0</a>
+        · Unofficial fan project, provided as-is, with no warranty.
+      </p>
+      <p class="site-footer-line">
+        Not affiliated with or endorsed by <span class="site-footer-nowrap">Daybreak Game Company LLC</span> or Game Jawn.
+      </p>
+      <hr class="site-footer-rule" aria-hidden="true">
+      <p class="site-footer-line site-footer-legal">
+        EverQuest® is a registered trademark of Daybreak Game Company LLC in the United States and/or other countries.
+        EverQuest Legends and Daybreak are trademarks or registered trademarks of Daybreak Game Company LLC.
+        All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  
+  <script src="/eqlfinest/assets/js/dom.js?v=dev"></script>
+  
+  <script src="/eqlfinest/assets/js/site.js?v=dev"></script>
+  
+  <script src="/eqlfinest/assets/js/toast.js?v=dev"></script>
+  
+  <script src="/eqlfinest/assets/js/tools/sky-sets/sky-data.js?v=dev"></script>
+  
+  <script src="/eqlfinest/assets/js/tools/sky-sets/engine.js?v=dev"></script>
+  
+  <script src="/eqlfinest/assets/js/tools/sky-sets/app.js?v=dev"></script>
+  
+</body>
+</html>
