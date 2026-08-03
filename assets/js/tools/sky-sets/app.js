@@ -47,6 +47,16 @@
   };
 
   const classOrder = new Map(data.classes.map((item, index) => [item.name, index]));
+  const evaluatedById = () => new Map((state.analysis?.evaluatedQuests || []).map((quest) => [quest.id, quest]));
+
+  function displayRuneName(name) {
+    const match = /^Wind Rune\s+(.+)$/i.exec(String(name || '').trim());
+    return match ? `${match[1]} Wind Rune` : name;
+  }
+
+  function displayItemName(name) {
+    return /^Wind Rune\s+/i.test(String(name || '')) ? displayRuneName(name) : name;
+  }
 
   function escapeHtml(value) {
     return String(value ?? '')
@@ -77,9 +87,10 @@
 
   function renderRuneInputs() {
     elements.runeInputGrid.innerHTML = runeOrder.map((name, index) => {
-      return `<label class="rune-input-item" title="${escapeHtml(name)}">
-        <span>${escapeHtml(name)}</span>
-        <input type="number" min="0" max="99" step="1" inputmode="numeric" value="${state.manualRunes[name]}" data-rune-name="${escapeHtml(name)}" aria-label="${escapeHtml(name)} count" data-rune-index="${index}">
+      const label = displayRuneName(name);
+      return `<label class="rune-input-item" title="${escapeHtml(label)}">
+        <span>${escapeHtml(label)}</span>
+        <input type="number" min="0" max="99" step="1" inputmode="numeric" value="${state.manualRunes[name]}" data-rune-name="${escapeHtml(name)}" aria-label="${escapeHtml(label)} count" data-rune-index="${index}">
       </label>`;
     }).join('');
 
@@ -289,11 +300,19 @@
 
     const resourceRows = quest.resources.map((resource) => {
       const have = resource.count > 0;
-      const source = /^wind rune /i.test(resource.name) ? 'Inventory > Storage > Currency' : sourceFor.get(resource.key) || '';
+      const isRune = /^wind rune /i.test(resource.name);
+      const sourceHtml = isRune
+        ? `<br><span class="source-note">Any Plane of Sky enemy</span>`
+        : (sourceFor.get(resource.key)
+          ? `<br><span class="source-note">${escapeHtml(sourceFor.get(resource.key))}</span>`
+          : '');
+      const locationsHtml = isRune
+        ? 'Inventory &gt; Storage &gt; Currency'
+        : (have ? escapeHtml(engine.locationText(resource.locations)) : 'Missing');
       return `<div class="resource-row ${have ? 'have' : 'miss'}">
         <span class="mark">${have ? '✓' : '×'}</span>
-        <span><strong>${escapeHtml(resource.name)}</strong>${source ? `<br><span class="source-note">${escapeHtml(source)}</span>` : ''}</span>
-        <span class="locations">${have ? escapeHtml(engine.locationText(resource.locations)) : 'Missing'}</span>
+        <span><strong>${escapeHtml(displayItemName(resource.name))}</strong>${sourceHtml}</span>
+        <span class="locations">${locationsHtml}</span>
       </div>`;
     }).join('');
 
@@ -333,28 +352,39 @@
   }
 
   function renderPiecesTable(pieces) {
-    return `<div class="table-wrap"><table class="data-table"><thead><tr><th>Item</th><th class="count">Owned</th><th class="count">Used in batch</th><th>Locations</th><th>Used by</th></tr></thead><tbody>${pieces.map((piece) => `
-      <tr>
+    const byId = evaluatedById();
+    return `<div class="table-wrap"><table class="data-table"><thead><tr><th>Item</th><th class="count">Owned</th><th class="count">Used in batch</th><th>Locations</th><th>Used by</th></tr></thead><tbody>${pieces.map((piece) => {
+      const allDone = piece.quests.length > 0 && piece.quests.every((quest) => byId.get(quest.id)?.rewardConflict);
+      const usedBy = allDone
+        ? '<span class="used-by-done">done</span>'
+        : piece.quests.map((quest) => `${escapeHtml(quest.className)} — ${escapeHtml(quest.test)}`).join('<br>');
+      return `
+      <tr${allDone ? ' class="piece-all-done"' : ''}>
         <td><strong>${escapeHtml(piece.name)}</strong></td>
         <td class="count">${piece.count}</td>
         <td class="count">${piece.selectedUse}</td>
         <td>${escapeHtml(engine.locationText(piece.locations))}</td>
-        <td class="class-links">${piece.quests.map((quest) => `${escapeHtml(quest.className)} — ${escapeHtml(quest.test)}`).join('<br>')}</td>
-      </tr>`).join('')}</tbody></table></div>`;
+        <td class="class-links">${usedBy}</td>
+      </tr>`;
+    }).join('')}</tbody></table></div>`;
   }
 
   function renderRunes() {
     const query = elements.searchFilter.value.trim().toLocaleLowerCase('en-US');
     const runes = state.analysis.runeSummary.filter((rune) => !query || rune.name.toLocaleLowerCase('en-US').includes(query));
-    const allRuneNames = [...new Set(data.quests.map((quest) => quest.rune))].sort();
+    const allRuneNames = [...runeOrder];
     const rows = allRuneNames.map((name) => {
       const present = runes.find((rune) => engine.normalizeItemName(rune.name) === engine.normalizeItemName(name));
       const usageCount = data.quests.filter((quest) => quest.rune === name).length;
       return { name, count: present?.count || 0, selectedUse: present?.selectedUse || 0, locations: present?.locations || [], usageCount };
-    }).filter((row) => !query || row.name.toLocaleLowerCase('en-US').includes(query));
+    }).filter((row) => {
+      if (!query) return true;
+      const display = displayRuneName(row.name).toLocaleLowerCase('en-US');
+      return display.includes(query) || row.name.toLocaleLowerCase('en-US').includes(query);
+    });
     elements.results.innerHTML = sectionHeader('Wind Rune inventory', 'Counts from Inventory > Storage > Currency are entered manually above; physical rune rows are added when present.', rows.length) +
       `<div class="table-wrap"><table class="data-table"><thead><tr><th>Rune</th><th class="count">Owned</th><th class="count">Selected use</th><th>Locations</th><th class="count">Tests using rune</th></tr></thead><tbody>${rows.map((row) => `
-        <tr><td><strong>${escapeHtml(row.name)}</strong></td><td class="count">${row.count}</td><td class="count">${row.selectedUse}</td><td>${row.count ? escapeHtml(engine.locationText(row.locations)) : '—'}</td><td class="count">${row.usageCount}</td></tr>
+        <tr><td><strong>${escapeHtml(displayRuneName(row.name))}</strong></td><td class="count">${row.count}</td><td class="count">${row.selectedUse}</td><td>${row.count ? escapeHtml(engine.locationText(row.locations)) : '—'}</td><td class="count">${row.usageCount}</td></tr>
       `).join('')}</tbody></table></div>`;
   }
 

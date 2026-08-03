@@ -194,7 +194,7 @@
       if (/^(any slot|ear|head|face|neck|shoulders|arms|back|wrist|range|hands|primary|secondary|fingers|chest|legs|feet|waist|ammo|general\s+\d+|held)/i.test(rawLocation)) detected.equippedAndBags = true;
       if (/^bank\d+/i.test(rawLocation)) detected.bank = true;
       if (/^sharedbank\d+/i.test(rawLocation)) detected.sharedBank = true;
-      if (/^hoard\s+\d+/i.test(rawLocation)) detected.hoard = true;
+      if (/^hoard(\s*\d+)?$/i.test(rawLocation) || /^dragon'?s?\s*hoard/i.test(rawLocation)) detected.hoard = true;
       if (/^personal-depot\d+/i.test(rawLocation)) detected.personalDepot = true;
       if (section === 'keyring' && /^equipment$/i.test(rawLocation)) detected.equipmentStorage = true;
       if (section === 'keyring' && /^activated$/i.test(rawLocation)) detected.activatedStorage = true;
@@ -203,8 +203,6 @@
 
     const warnings = [];
     if (!sawInventoryHeader) warnings.push('The standard Location / Name inventory header was not detected.');
-    if (!detected.hoard) warnings.push("Dragon's Hoard was not detected in this export.");
-    if (!detected.equipmentStorage) warnings.push('Equipment Storage was not detected in this export.');
     if (!sawKeyRingHeader) warnings.push('The KeyRing section was not detected. The file may omit storage near the end.');
     if (recognizedRows === 0) warnings.push('No item rows were parsed.');
 
@@ -242,7 +240,7 @@
     };
   }
 
-  function withManualCounts(parsed, counts = {}, location = 'Currency tab (manual)') {
+  function withManualCounts(parsed, counts = {}, location = 'Inventory > Storage > Currency') {
     const result = cloneParsed(parsed);
     for (const [name, rawCount] of Object.entries(counts || {})) {
       const count = Math.max(0, Number.parseInt(String(rawCount || 0), 10) || 0);
@@ -286,7 +284,7 @@
   }
 
   function questResources(quest) {
-    return [quest.rune, ...quest.items.map((item) => item.name)];
+    return [...quest.items.map((item) => item.name), quest.rune];
   }
 
   function evaluateQuest(quest, parsed) {

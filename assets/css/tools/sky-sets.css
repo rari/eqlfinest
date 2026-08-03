@@ -704,6 +704,16 @@ kbd {
   color: var(--sky-muted);
 }
 
+.used-by-done {
+  color: var(--sky-green);
+  font-weight: 650;
+  font-style: normal;
+}
+
+.piece-all-done td {
+  opacity: 0.72;
+}
+
 .check-control {
   color: var(--sky-muted);
   font-size: 0.82rem;
