@@ -288,6 +288,16 @@ html.hero-ready:not(.site-return) .tool-list li {
   margin-top: 0.65rem;
 }
 
+.lost-copy a {
+  color: var(--gold-bright);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.lost-copy a:hover {
+  color: var(--parchment);
+}
+
 @keyframes lost-spin {
   to {
     transform: rotate(360deg);
