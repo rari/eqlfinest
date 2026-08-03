@@ -211,3 +211,103 @@ html.hero-ready:not(.site-return) .tool-list li {
   }
 }
 
+/* 404 — This zone does not exist */
+.lost-panel {
+  text-align: center;
+  padding: 1.25rem 0 0.5rem;
+}
+
+.lost-orb {
+  position: relative;
+  width: 7.5rem;
+  height: 7.5rem;
+  margin: 0 auto 1.35rem;
+}
+
+.lost-orb-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  box-shadow:
+    0 0 0 8px rgba(201, 162, 39, 0.05),
+    inset 0 0 28px rgba(201, 162, 39, 0.12);
+  animation: lost-spin 18s linear infinite;
+}
+
+.lost-orb-ring::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  margin-left: -3.5px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  box-shadow: 0 0 12px rgba(240, 208, 96, 0.75);
+}
+
+.lost-orb-core {
+  position: absolute;
+  inset: 1.15rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(240, 208, 96, 0.35), transparent 45%),
+    radial-gradient(circle at 50% 55%, rgba(60, 90, 140, 0.45), rgba(7, 11, 18, 0.92));
+  border: 1px solid rgba(201, 162, 39, 0.28);
+  color: var(--gold-bright);
+  font-family: Cinzel, Georgia, serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  animation: lost-bob 3.6s ease-in-out infinite;
+}
+
+.lost-code {
+  margin: 0 0 0.85rem;
+  font-family: Cinzel, Georgia, serif;
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(240, 208, 96, 0.82);
+}
+
+.lost-copy {
+  margin: 0 auto;
+  max-width: 28rem;
+  color: var(--ink-dim);
+  line-height: 1.55;
+  font-size: 1.05rem;
+}
+
+.lost-copy + .lost-copy {
+  margin-top: 0.65rem;
+}
+
+@keyframes lost-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes lost-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lost-orb-ring,
+  .lost-orb-core {
+    animation: none;
+  }
+}
+
