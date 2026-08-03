@@ -5,8 +5,7 @@
   const EXALTATION = /\(\s*exaltation\s*\)/i;
 
   const MAX_INVENTORY_BYTES = 2 * 1024 * 1024;
-  // Game writes <Character>_<server>_Inventory.txt (character may include underscores; server is the last segment before _Inventory).
-  const INVENTORY_FILENAME_RE = /^.+_[^_]+_Inventory\.txt$/i;
+  const INVENTORY_FILENAME_RE = /inventory\.txt$/i;
 
   function looksLikeInventoryFilename(name) {
     return INVENTORY_FILENAME_RE.test(String(name || '').trim());
@@ -18,7 +17,7 @@
     }
     if (!file.size) {
       throw new Error(
-        `"${file.name}" is empty. Run /outputfile inventory in game, then choose <Character>_<server>_Inventory.txt from your EQ folder.`
+        `"${file.name}" is empty. Run /outputfile inventory in game, then choose the inventory text file from your EQ folder.`
       );
     }
     if (file.size > MAX_INVENTORY_BYTES) {
@@ -28,18 +27,18 @@
     }
     if (!/\.txt$/i.test(file.name)) {
       throw new Error(
-        `"${file.name}" is not a .txt file. Use a <Character>_<server>_Inventory.txt file from /outputfile inventory.`
+        `"${file.name}" is not a .txt file. Use the inventory export from /outputfile inventory.`
       );
     }
     if (!looksLikeInventoryFilename(file.name)) {
       throw new Error(
-        `"${file.name}" does not look like an inventory export. Use <Character>_<server>_Inventory.txt from /outputfile inventory.`
+        `"${file.name}" does not look like an inventory export. Use the file from /outputfile inventory.`
       );
     }
   }
 
   function validateInventoryText(text, filename) {
-    const label = filename || 'Character_server_Inventory.txt';
+    const label = filename || 'inventory.txt';
     if (typeof text !== 'string' || !text.trim()) {
       throw new Error(`"${label}" has no readable text.`);
     }
@@ -50,7 +49,7 @@
     const replacementCount = (sample.match(/\uFFFD/g) || []).length;
     if (replacementCount > 20) {
       throw new Error(
-        `"${label}" could not be read as text. Choose a <Character>_<server>_Inventory.txt file from /outputfile inventory.`
+        `"${label}" could not be read as text. Choose the inventory export from /outputfile inventory.`
       );
     }
     if (/\[SpellLoadouts\]/i.test(text)) {
@@ -474,7 +473,7 @@
     return locations.map((entry) => `${entry.location}${entry.count > 1 ? ` ×${entry.count}` : ''}`).join('; ');
   }
 
-  function buildTextReport(analysis, fileName = 'Character_server_Inventory.txt') {
+  function buildTextReport(analysis, fileName = 'inventory.txt') {
     const lines = [];
     lines.push('PLANE OF SKY TURN-IN ANALYZER');
     lines.push(`Inventory: ${fileName}`);
