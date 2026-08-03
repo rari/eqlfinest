@@ -311,7 +311,7 @@
         <span class="status ${status.className}">${escapeHtml(status.text)}</span>
       </summary>
       <div class="quest-body">
-        <div class="quest-meta"><span><strong>Take to:</strong> ${escapeHtml(quest.npc)}</span><span><strong>Where:</strong> Quest Room, Island 1</span><span><strong>Optional dialogue:</strong> “${escapeHtml(quest.phrase)}”</span></div>
+        <div class="quest-meta"><span><strong>Take to:</strong> ${escapeHtml(quest.npc)}</span><span><strong>Optional dialogue:</strong> “${escapeHtml(quest.phrase)}”</span></div>
         <div class="resource-list">${resourceRows}</div>
         <p class="reward-line"><strong>Reward:</strong> ${escapeHtml(quest.rewards.join(' + '))}${rewardConflictText}</p>
         ${allocationText}
