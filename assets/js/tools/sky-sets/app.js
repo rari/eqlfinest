@@ -147,11 +147,11 @@
   function analyzeText(text, fileName) {
     engine.validateInventoryText(text, fileName);
     state.rawText = text;
-    state.fileName = fileName || 'Inventory.txt';
+    state.fileName = fileName || 'Character_server_Inventory.txt';
     state.parsed = engine.parseInventory(text);
     if (!state.parsed.stats.parsedRows) {
       throw new Error(
-        `"${state.fileName}" has no item rows. Choose Inventory.txt from /outputfile inventory.`
+        `"${state.fileName}" has no item rows. Choose a <Character>_<server>_Inventory.txt file from /outputfile inventory.`
       );
     }
     state.analysis = engine.analyzeInventory(effectiveParsed(), data, analysisOptions());
