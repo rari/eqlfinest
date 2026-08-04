@@ -47,7 +47,20 @@
   };
 
   const classOrder = new Map(data.classes.map((item, index) => [item.name, index]));
+  // Sprite column order matches Spell Bars / class-sprite.png.
+  const CLASS_SPRITE_ORDER = [
+    'WAR', 'CLR', 'PAL', 'RNG', 'SHD', 'DRU', 'MNK', 'BRD',
+    'ROG', 'SHM', 'NEC', 'WIZ', 'MAG', 'ENC', 'BST', 'BER',
+  ];
   const evaluatedById = () => new Map((state.analysis?.evaluatedQuests || []).map((quest) => [quest.id, quest]));
+
+  function classIconHtml(abbr, className) {
+    const code = String(abbr || '').toUpperCase();
+    const spriteIndex = CLASS_SPRITE_ORDER.indexOf(code);
+    const ci = spriteIndex >= 0 ? spriteIndex : 0;
+    const label = className || code;
+    return `<span class="class-icon" data-ci="${ci}" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}"></span>`;
+  }
 
   function displayRuneName(name) {
     const match = /^Wind Rune\s+(.+)$/i.exec(String(name || '').trim());
@@ -325,7 +338,7 @@
 
     return `<details class="${cardClasses.join(' ')}" ${flags.open ? 'open' : ''}>
       <summary>
-        <span class="class-badge">${escapeHtml(quest.classAbbr)}</span>
+        <span class="class-icon-wrap">${classIconHtml(quest.classAbbr, quest.className)}</span>
         <span class="quest-title"><strong>${escapeHtml(quest.className)} — ${escapeHtml(quest.test)}</strong><span>Reward: ${escapeHtml(quest.rewards.join(' + '))}</span></span>
         <span class="status ${status.className}">${escapeHtml(status.text)}</span>
       </summary>
