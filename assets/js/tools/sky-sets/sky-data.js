@@ -411,7 +411,7 @@
         },
         {
           "name": "Efreeti Great Staff",
-          "source": "Efreeti cycle — Noble Dojorn / Overseer of Air / Hand of Veeshan"
+          "source": "Island 8 — Eye of Veeshan / Noble Dojorn"
         }
       ],
       "rewards": [
@@ -1121,7 +1121,7 @@
         },
         {
           "name": "Efreeti Great Staff",
-          "source": "Efreeti cycle — Noble Dojorn / Overseer of Air / Hand of Veeshan"
+          "source": "Island 8 — Eye of Veeshan / Noble Dojorn"
         }
       ],
       "rewards": [

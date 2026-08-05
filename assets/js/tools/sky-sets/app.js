@@ -84,6 +84,7 @@
     'Island 7 — Sister of the Spire',
     'Island 7 trash',
     'Island 8 — Eye of Veeshan',
+    'Island 8 — Eye of Veeshan / Noble Dojorn',
     'Efreeti cycle — Noble Dojorn / Overseer of Air / Hand of Veeshan',
   ];
   const sourceRank = (source) => {
