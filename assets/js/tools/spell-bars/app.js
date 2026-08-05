@@ -1675,5 +1675,8 @@ bindSpellTips(slotGrid);
 bindSpellTips(pickerResults);
 pickerResults.addEventListener("scroll", hideSpellTip, { passive: true });
 window.addEventListener("blur", hideSpellTip);
+if (window.EQLDom?.bindNumFields) {
+  window.EQLDom.bindNumFields(document.body);
+}
 
 boot();

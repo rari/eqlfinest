@@ -240,6 +240,30 @@
     };
   }
 
+  function createEmptyParsed() {
+    return {
+      items: new Map(),
+      rawItems: [],
+      detected: {
+        equippedAndBags: false,
+        bank: false,
+        sharedBank: false,
+        hoard: false,
+        personalDepot: false,
+        equipmentStorage: false,
+        activatedStorage: false,
+        augmentationStorage: false,
+      },
+      warnings: [],
+      stats: {
+        inputLines: 0,
+        parsedRows: 0,
+        uniqueItems: 0,
+        ignoredExaltations: 0,
+      },
+    };
+  }
+
   function withManualCounts(parsed, counts = {}, location = 'Inventory > Storage > Currency') {
     const result = cloneParsed(parsed);
     for (const [name, rawCount] of Object.entries(counts || {})) {
@@ -264,6 +288,60 @@
     }
     result.manualCounts = { ...counts };
     return result;
+  }
+
+  /** Set absolute owned totals for named items (replaces export counts for those keys). */
+  function withCountOverrides(parsed, overrides = {}, location = 'Manual entry') {
+    const result = cloneParsed(parsed);
+    for (const [name, rawCount] of Object.entries(overrides || {})) {
+      const count = Math.max(0, Number.parseInt(String(rawCount || 0), 10) || 0);
+      const baseName = stripRank(name);
+      const key = normalizeItemName(baseName);
+      if (!count) {
+        result.items.delete(key);
+        continue;
+      }
+      result.items.set(key, {
+        key,
+        name: baseName,
+        totalCount: count,
+        locations: [{ location, count, originalName: baseName, id: '' }],
+        ids: new Set(),
+        variants: new Set([baseName]),
+      });
+    }
+    result.countOverrides = { ...overrides };
+    return result;
+  }
+
+  function buildPieceCatalog(data) {
+    const byKey = new Map();
+    for (const quest of data.quests || []) {
+      for (const item of quest.items || []) {
+        const key = normalizeItemName(item.name);
+        if (!byKey.has(key)) {
+          byKey.set(key, {
+            key,
+            name: item.name,
+            source: item.source || 'Unknown source',
+            quests: [],
+          });
+        }
+        const entry = byKey.get(key);
+        if (!entry.quests.some((row) => row.id === quest.id)) {
+          entry.quests.push({
+            id: quest.id,
+            className: quest.className,
+            classAbbr: quest.classAbbr,
+            test: quest.test,
+          });
+        }
+        if (!entry.source && item.source) entry.source = item.source;
+      }
+    }
+    return [...byKey.values()].sort((a, b) =>
+      a.source.localeCompare(b.source) || a.name.localeCompare(b.name)
+    );
   }
 
   function inventoryCount(parsed, name) {
@@ -513,8 +591,11 @@
     validateSelectedFile,
     validateInventoryText,
     parseInventory,
+    createEmptyParsed,
     cloneParsed,
     withManualCounts,
+    withCountOverrides,
+    buildPieceCatalog,
     inventoryCount,
     inventoryEntry,
     compactLocations,

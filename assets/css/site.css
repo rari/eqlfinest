@@ -1099,6 +1099,120 @@ select {
 .class-icon[data-ci="14"] { --ci: 14; }
 .class-icon[data-ci="15"] { --ci: 15; }
 
+/* Shared number field with styled steppers (hides native spin buttons). */
+.num-field {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: minmax(0, 1fr) 1.35rem;
+  align-items: stretch;
+  width: 100%;
+  min-width: 4.5rem;
+  border: 1px solid rgba(201, 162, 39, 0.28);
+  border-radius: 7px;
+  background: rgba(7, 11, 18, 0.9);
+  overflow: hidden;
+}
+
+.num-field:focus-within {
+  border-color: rgba(240, 208, 96, 0.55);
+  box-shadow: 0 0 0 1px rgba(240, 208, 96, 0.2);
+}
+
+.num-field-input {
+  appearance: textfield;
+  -moz-appearance: textfield;
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  margin: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--parchment);
+  padding: 0.4rem 0.5rem;
+  text-align: center;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.num-field-input::-webkit-outer-spin-button,
+.num-field-input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.num-field-input:focus {
+  outline: none;
+}
+
+.num-field-input:focus-visible {
+  outline: none;
+}
+
+.num-field-steps {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  border-left: 1px solid rgba(201, 162, 39, 0.22);
+}
+
+.num-field-step {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: rgba(201, 162, 39, 0.08);
+  color: rgba(240, 208, 96, 0.82);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.num-field-step + .num-field-step {
+  border-top: 1px solid rgba(201, 162, 39, 0.22);
+}
+
+.num-field-step::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 0.28rem solid transparent;
+  border-right: 0.28rem solid transparent;
+}
+
+.num-field-step[data-dir="1"]::before {
+  border-bottom: 0.32rem solid currentColor;
+}
+
+.num-field-step[data-dir="-1"]::before {
+  border-top: 0.32rem solid currentColor;
+}
+
+.num-field-step:hover {
+  background: rgba(201, 162, 39, 0.22);
+  color: var(--gold-bright);
+}
+
+.num-field-step:active {
+  background: rgba(201, 162, 39, 0.34);
+}
+
+.num-field-step:focus-visible {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+.num-field.is-compact {
+  min-width: 3.75rem;
+  width: 4.75rem;
+}
+
+.num-field.is-compact .num-field-input {
+  padding: 0.35rem 0.35rem;
+  font-size: 0.85rem;
+}
+
 .app-toast {
   position: fixed;
   left: 50%;

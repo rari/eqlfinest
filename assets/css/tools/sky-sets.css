@@ -26,6 +26,128 @@
   align-items: center;
 }
 
+.sky-import .secondary-btn {
+  appearance: none;
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  background: rgba(7, 11, 18, 0.65);
+  color: var(--parchment);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.2rem;
+  font-family: Cinzel, Georgia, serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+
+.sky-import .secondary-btn:hover {
+  border-color: rgba(240, 208, 96, 0.55);
+  background: rgba(201, 162, 39, 0.12);
+}
+
+.sky-import .secondary-btn:focus-visible {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 2px;
+}
+
+.boss-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+
+.boss-group {
+  margin-bottom: 1rem;
+}
+
+.boss-group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.55rem;
+  font-family: Cinzel, Georgia, serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.03em;
+}
+
+.boss-piece-list {
+  display: grid;
+  gap: 6px;
+}
+
+.boss-piece-row {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--sky-border);
+  border-radius: 8px;
+  background: var(--sky-panel-2);
+  cursor: default;
+}
+
+.boss-piece-row.is-overridden {
+  border-color: rgba(201, 162, 39, 0.42);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.12);
+}
+
+.boss-piece-row.piece-all-done {
+  opacity: 0.72;
+}
+
+.boss-piece-main {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.boss-piece-main strong {
+  color: var(--parchment);
+  font-size: 0.88rem;
+}
+
+.boss-piece-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.boss-file-hint {
+  color: var(--sky-muted);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .boss-piece-row {
+    grid-template-columns: 32px 1fr;
+    gap: 8px;
+  }
+
+  .boss-piece-count {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+
+  .resource-row {
+    grid-template-columns: 20px 28px minmax(0, 1fr);
+  }
+
+  .resource-row .locations {
+    grid-column: 2 / -1;
+  }
+}
+
 .step-heading {
   display: flex;
   flex-wrap: wrap;
@@ -87,11 +209,24 @@
 }
 
 .sky-btn:focus-visible,
-.rune-input-item input:focus-visible,
 .results-tools input:focus-visible,
 .results-tools select:focus-visible {
   outline: 2px solid var(--gold-bright);
   outline-offset: 2px;
+}
+
+.rune-input-item .num-field {
+  width: 100%;
+}
+
+.rune-input-item .num-field-input {
+  text-align: right;
+  font-size: 1rem;
+  font-weight: 750;
+}
+
+.boss-piece-count .num-field {
+  width: 4.75rem;
 }
 
 .import-notes {
@@ -217,18 +352,10 @@ kbd {
   color: var(--parchment);
 }
 
-.rune-input-item input {
-  width: 100%;
-  max-width: none;
-  border: 1px solid var(--sky-border);
-  border-radius: 7px;
-  padding: 6px 7px;
-  color: var(--sky-text);
-  background: rgba(7, 11, 18, 0.9);
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  font-size: 1rem;
-  font-weight: 750;
+.rune-input-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .rune-footer {
@@ -622,9 +749,9 @@ kbd {
 
 .resource-row {
   display: grid;
-  grid-template-columns: 20px minmax(180px, 0.7fr) minmax(220px, 1.3fr);
+  grid-template-columns: 20px 28px minmax(160px, 0.7fr) minmax(200px, 1.3fr);
   gap: 8px;
-  align-items: start;
+  align-items: center;
   padding: 6px 8px;
   border-radius: 6px;
   background: rgba(7, 11, 18, 0.48);
@@ -646,6 +773,52 @@ kbd {
 
 .resource-row .locations {
   color: var(--sky-muted);
+}
+
+.item-icon,
+.item-icon-fallback {
+  display: block;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  image-rendering: pixelated;
+  border-radius: 4px;
+  background: transparent;
+}
+
+.item-icon.is-md,
+.item-icon-fallback.is-md {
+  width: 28px;
+  height: 28px;
+}
+
+.item-icon.is-sm,
+.item-icon-fallback.is-sm {
+  width: 24px;
+  height: 24px;
+}
+
+.item-icon-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(201, 162, 39, 0.15);
+  color: var(--gold-bright);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.icon-col {
+  width: 2.5rem;
+  vertical-align: middle;
+}
+
+.reward-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 0.45rem;
+  vertical-align: middle;
 }
 
 .reward-line {
@@ -806,11 +979,11 @@ kbd {
   }
 
   .resource-row {
-    grid-template-columns: 20px 1fr;
+    grid-template-columns: 20px 28px minmax(0, 1fr);
   }
 
   .resource-row .locations {
-    grid-column: 2;
+    grid-column: 2 / -1;
   }
 
   .quest-card summary {

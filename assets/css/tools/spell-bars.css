@@ -117,22 +117,16 @@
   margin: 0;
 }
 
-.level-field input {
+.level-field .num-field {
   width: 7rem;
   min-height: 2.6rem;
   border-radius: 10px;
-  border: 1px solid rgba(201, 162, 39, 0.28);
-  background: rgba(7, 11, 18, 0.85);
-  color: var(--parchment);
-  padding: 0.5rem 0.75rem;
-  font: inherit;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.level-field input:focus {
-  outline: none;
-  border-color: rgba(240, 208, 96, 0.55);
-  box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.15);
+.level-field .num-field-input {
+  min-height: 2.6rem;
+  padding: 0.5rem 0.55rem;
+  text-align: left;
 }
 
 .editor-panel {
@@ -741,8 +735,12 @@ body.picker-open {
     width: 100%;
   }
 
-  .level-field input {
+  .level-field .num-field {
     width: 100%;
+    min-height: 3.25rem;
+  }
+
+  .level-field .num-field-input {
     min-height: 3.25rem;
     font-size: 1.05rem;
   }
