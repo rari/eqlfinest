@@ -187,8 +187,22 @@
     elements.runeTotal.classList.toggle('has-counts', total > 0);
   }
 
+  function seedManualRunesFromParsed() {
+    if (!state.parsed) return;
+    for (const name of runeOrder) {
+      const count = engine.inventoryCount(state.parsed, name);
+      state.manualRunes[name] = Math.max(0, Math.min(99, count));
+    }
+  }
+
   function effectiveParsed() {
-    const withRunes = engine.withManualCounts(state.parsed, state.manualRunes);
+    // Currency boxes are absolute totals. A typed 0 means none — even if the export
+    // listed a physical Wind Rune row (those are uncommon but used to keep counting).
+    const withRunes = engine.withCountOverrides(
+      state.parsed,
+      state.manualRunes,
+      'Inventory > Storage > Currency'
+    );
     return engine.withCountOverrides(withRunes, state.pieceOverrides, 'Manual entry');
   }
 
@@ -253,6 +267,8 @@
         `"${state.fileName}" has no item rows. Choose the inventory export from /outputfile inventory.`
       );
     }
+    seedManualRunesFromParsed();
+    renderRuneInputs();
     state.analysis = engine.analyzeInventory(effectiveParsed(), data, analysisOptions());
     elements.analysisPanel.classList.remove('hidden');
     render();
@@ -621,7 +637,7 @@
       const display = displayRuneName(row.name).toLocaleLowerCase('en-US');
       return display.includes(query) || row.name.toLocaleLowerCase('en-US').includes(query);
     });
-    elements.results.innerHTML = sectionHeader('Wind Rune inventory', 'Counts from Inventory > Storage > Currency are entered manually above; physical rune rows are added when present.', rows.length) +
+    elements.results.innerHTML = sectionHeader('Wind Rune inventory', 'Totals come from the currency boxes above. A 0 means that rune is not available for turn-ins.', rows.length) +
       `<div class="table-wrap"><table class="data-table"><thead><tr><th class="icon-col"></th><th>Rune</th><th class="count">Owned</th><th class="count">Selected use</th><th>Locations</th><th class="count">Tests using rune</th></tr></thead><tbody>${rows.map((row) => `
         <tr><td class="icon-col">${itemIconHtml(row.name, 28)}</td><td><strong>${escapeHtml(displayRuneName(row.name))}</strong></td><td class="count">${row.count}</td><td class="count">${row.selectedUse}</td><td>${row.count ? escapeHtml(engine.locationText(row.locations)) : '—'}</td><td class="count">${row.usageCount}</td></tr>
       `).join('')}</tbody></table></div>`;
