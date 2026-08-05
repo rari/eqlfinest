@@ -270,6 +270,12 @@
   border-color: rgba(201, 162, 39, 0.28);
 }
 
+.sky-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .sky-btn:focus-visible,
 .results-tools input:focus-visible,
 .results-tools select:focus-visible {

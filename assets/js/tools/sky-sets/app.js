@@ -22,6 +22,7 @@
     results: document.getElementById('results'),
     printButton: document.getElementById('printButton'),
     exportButton: document.getElementById('exportButton'),
+    shareButton: document.getElementById('shareButton'),
     runeInputGrid: document.getElementById('runeInputGrid'),
     runeTotal: document.getElementById('runeTotal'),
     clearRunes: document.getElementById('clearRunes'),
@@ -49,6 +50,7 @@
   };
 
   const RUNE_STORAGE_KEY = 'eqlfinest-sky-sets-runes-v1';
+  const SHARE_HASH_PREFIX = '#share=';
 
   function loadStoredRunes() {
     try {
@@ -71,6 +73,172 @@
     } catch {
       /* ignore quota / private mode */
     }
+  }
+
+  function toBase64Url(bytes) {
+    let binary = '';
+    for (const byte of bytes) binary += String.fromCharCode(byte);
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+  }
+
+  function fromBase64Url(text) {
+    const padded = String(text || '').replace(/-/g, '+').replace(/_/g, '/');
+    const padLength = (4 - (padded.length % 4)) % 4;
+    const binary = atob(padded + '='.repeat(padLength));
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+    return bytes;
+  }
+
+  function skyItemNames() {
+    const names = new Set();
+    for (const quest of data.quests) {
+      for (const item of quest.items || []) {
+        if (item?.name) names.add(item.name);
+      }
+      for (const reward of quest.rewards || []) {
+        if (reward) names.add(reward);
+      }
+    }
+    return names;
+  }
+
+  function effectiveSkyItemCounts() {
+    if (!state.parsed) return {};
+    const effective = effectiveParsed();
+    const pieces = {};
+    for (const name of skyItemNames()) {
+      const count = Math.min(99, engine.inventoryCount(effective, name));
+      if (count > 0) pieces[name] = count;
+    }
+    return pieces;
+  }
+
+  function hasShareablePlan() {
+    if (Object.values(state.manualRunes).some((count) => count > 0)) return true;
+    if (Object.keys(effectiveSkyItemCounts()).length > 0) return true;
+    if (Object.values(state.classPriority).some((level) => level !== 'normal')) return true;
+    if (!elements.preferCompletion.checked) return true;
+    if (elements.includeConflicts.checked) return true;
+    return false;
+  }
+
+  function updateShareButton() {
+    if (!elements.shareButton) return;
+    elements.shareButton.disabled = !state.analysis || !hasShareablePlan();
+  }
+
+  function encodeSharePayload() {
+    const priorities = {};
+    for (const [className, level] of Object.entries(state.classPriority)) {
+      if (level && level !== 'normal') priorities[className] = level;
+    }
+    const payload = {
+      v: 1,
+      r: runeOrder.map((name) => Math.max(0, Math.min(99, Number.parseInt(String(state.manualRunes[name] || 0), 10) || 0))),
+      p: effectiveSkyItemCounts(),
+      pr: priorities,
+      pc: elements.preferCompletion.checked ? 1 : 0,
+      ic: elements.includeConflicts.checked ? 1 : 0,
+    };
+    return toBase64Url(new TextEncoder().encode(JSON.stringify(payload)));
+  }
+
+  function decodeSharePayload(encoded) {
+    try {
+      const payload = JSON.parse(new TextDecoder().decode(fromBase64Url(encoded)));
+      if (!payload || payload.v !== 1 || !Array.isArray(payload.r)) return null;
+
+      const manualRunes = Object.fromEntries(runeOrder.map((name) => [name, 0]));
+      for (let i = 0; i < runeOrder.length; i += 1) {
+        manualRunes[runeOrder[i]] = Math.max(0, Math.min(99, Number.parseInt(String(payload.r[i] ?? 0), 10) || 0));
+      }
+
+      const pieceOverrides = {};
+      if (payload.p && typeof payload.p === 'object') {
+        for (const [name, raw] of Object.entries(payload.p)) {
+          const value = Math.max(0, Math.min(99, Number.parseInt(String(raw), 10) || 0));
+          if (value > 0 && String(name || '').trim()) pieceOverrides[String(name).trim()] = value;
+        }
+      }
+
+      const classPriority = Object.fromEntries(data.classes.map((item) => [item.name, 'normal']));
+      if (payload.pr && typeof payload.pr === 'object') {
+        for (const [className, level] of Object.entries(payload.pr)) {
+          if (!Object.prototype.hasOwnProperty.call(classPriority, className)) continue;
+          if (level === 'high' || level === 'low' || level === 'normal') classPriority[className] = level;
+        }
+      }
+
+      return {
+        manualRunes,
+        pieceOverrides,
+        classPriority,
+        preferCompletion: payload.pc == null ? true : Boolean(Number(payload.pc)),
+        includeConflicts: payload.ic == null ? false : Boolean(Number(payload.ic)),
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  function shareUrlForPlan() {
+    return `${location.origin}${location.pathname}${location.search}${SHARE_HASH_PREFIX}${encodeSharePayload()}`;
+  }
+
+  function clearShareHash() {
+    if (!(location.hash || '').startsWith(SHARE_HASH_PREFIX)) return;
+    history.replaceState(null, '', `${location.pathname}${location.search}`);
+  }
+
+  function applySharedPlan(decoded) {
+    state.manualRunes = { ...decoded.manualRunes };
+    state.pieceOverrides = { ...decoded.pieceOverrides };
+    state.classPriority = { ...decoded.classPriority };
+    elements.preferCompletion.checked = decoded.preferCompletion;
+    elements.includeConflicts.checked = decoded.includeConflicts;
+
+    state.rawText = '';
+    state.fileName = 'shared plan';
+    state.manualOnly = true;
+    state.parsed = engine.createEmptyParsed();
+    state.analysis = engine.analyzeInventory(effectiveParsed(), data, analysisOptions());
+    elements.analysisPanel.classList.remove('hidden');
+    renderRuneInputs();
+    renderPriorityGrid();
+    setActiveTab('recommended');
+    render();
+    updateShareButton();
+    clearShareHash();
+    elements.summaryPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setStatus('Opened shared Sky Sets plan. Load an inventory file anytime to merge with your bags.');
+  }
+
+  async function copyShareLink() {
+    if (!state.analysis) {
+      setStatus('Load an inventory or enter pieces before sharing.');
+      return;
+    }
+    if (!hasShareablePlan()) {
+      setStatus('Enter rune counts or load Sky items before sharing.');
+      return;
+    }
+    const url = shareUrlForPlan();
+    await navigator.clipboard.writeText(url);
+    setStatus('Share link copied (your page stays on the open inventory).');
+  }
+
+  function tryOpenShareHash() {
+    const hash = location.hash || '';
+    if (!hash.startsWith(SHARE_HASH_PREFIX)) return false;
+    const decoded = decodeSharePayload(hash.slice(SHARE_HASH_PREFIX.length));
+    if (!decoded) {
+      setStatus('That share link looks invalid.', { error: true });
+      clearShareHash();
+      return false;
+    }
+    applySharedPlan(decoded);
+    return true;
   }
 
   const pieceCatalog = engine.buildPieceCatalog(data);
@@ -319,6 +487,7 @@
     state.analysis = engine.analyzeInventory(effectiveParsed(), data, analysisOptions());
     renderRuneTotal();
     renderSummary();
+    updateShareButton();
     if (state.activeTab === 'boss' && elements.results.querySelector('input[data-piece-name]')) {
       refreshBossRowStates();
     } else {
@@ -355,6 +524,7 @@
   function render() {
     renderSummary();
     renderResults();
+    updateShareButton();
   }
 
   function renderSummary() {
@@ -792,6 +962,11 @@
     setActiveTab('recommended');
     window.print();
   });
+  if (elements.shareButton) {
+    elements.shareButton.addEventListener('click', () => {
+      copyShareLink().catch((error) => setStatus(error?.message || 'Could not copy share link.', { error: true }));
+    });
+  }
 
   for (const eventName of ['dragenter', 'dragover']) {
     elements.dropZone.addEventListener(eventName, (event) => {
@@ -807,6 +982,12 @@
   }
   elements.dropZone.addEventListener('drop', (event) => readFile(event.dataTransfer.files[0]));
 
+  window.addEventListener('hashchange', () => {
+    tryOpenShareHash();
+  });
+
   loadStoredRunes();
   initializeControls();
+  updateShareButton();
+  tryOpenShareHash();
 })();
