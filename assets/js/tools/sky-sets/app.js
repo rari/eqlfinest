@@ -48,6 +48,31 @@
     pieceOverrides: {},
   };
 
+  const RUNE_STORAGE_KEY = 'eqlfinest-sky-sets-runes-v1';
+
+  function loadStoredRunes() {
+    try {
+      const raw = window.localStorage?.getItem(RUNE_STORAGE_KEY);
+      if (!raw) return;
+      const stored = JSON.parse(raw);
+      if (!stored || typeof stored !== 'object') return;
+      for (const name of runeOrder) {
+        if (stored[name] == null) continue;
+        state.manualRunes[name] = Math.max(0, Math.min(99, Number.parseInt(String(stored[name]), 10) || 0));
+      }
+    } catch {
+      /* ignore bad or blocked storage */
+    }
+  }
+
+  function saveStoredRunes() {
+    try {
+      window.localStorage?.setItem(RUNE_STORAGE_KEY, JSON.stringify(state.manualRunes));
+    } catch {
+      /* ignore quota / private mode */
+    }
+  }
+
   const pieceCatalog = engine.buildPieceCatalog(data);
   const SOURCE_ORDER = [
     'Island 2 — Protector of Sky',
@@ -173,6 +198,7 @@
         const value = Math.max(0, Math.min(99, Number.parseInt(input.value || '0', 10) || 0));
         state.manualRunes[input.dataset.runeName] = value;
         if (input.value !== String(value)) input.value = String(value);
+        saveStoredRunes();
         recalculate();
       });
     });
@@ -185,14 +211,6 @@
     const total = Object.values(state.manualRunes).reduce((sum, count) => sum + count, 0);
     elements.runeTotal.textContent = `${total.toLocaleString()} rune${total === 1 ? '' : 's'} entered`;
     elements.runeTotal.classList.toggle('has-counts', total > 0);
-  }
-
-  function seedManualRunesFromParsed() {
-    if (!state.parsed) return;
-    for (const name of runeOrder) {
-      const count = engine.inventoryCount(state.parsed, name);
-      state.manualRunes[name] = Math.max(0, Math.min(99, count));
-    }
   }
 
   function effectiveParsed() {
@@ -267,8 +285,6 @@
         `"${state.fileName}" has no item rows. Choose the inventory export from /outputfile inventory.`
       );
     }
-    seedManualRunesFromParsed();
-    renderRuneInputs();
     state.analysis = engine.analyzeInventory(effectiveParsed(), data, analysisOptions());
     elements.analysisPanel.classList.remove('hidden');
     render();
@@ -712,6 +728,7 @@
   elements.includeConflicts.addEventListener('change', recalculate);
   elements.clearRunes.addEventListener('click', () => {
     for (const name of Object.keys(state.manualRunes)) state.manualRunes[name] = 0;
+    saveStoredRunes();
     renderRuneInputs();
     recalculate();
   });
@@ -746,5 +763,6 @@
   }
   elements.dropZone.addEventListener('drop', (event) => readFile(event.dataTransfer.files[0]));
 
+  loadStoredRunes();
   initializeControls();
 })();
