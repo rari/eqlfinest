@@ -54,6 +54,60 @@
   outline-offset: 2px;
 }
 
+.reward-class-group {
+  margin-bottom: 1rem;
+}
+
+.reward-class-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.55rem;
+  font-family: Cinzel, Georgia, serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.03em;
+}
+
+.detected-reward-list {
+  display: grid;
+  gap: 6px;
+}
+
+.detected-reward-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(8rem, 0.9fr);
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--sky-border);
+  border-radius: 8px;
+  background: var(--sky-panel-2);
+}
+
+.detected-reward-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.detected-reward-main {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.detected-reward-main strong {
+  color: var(--parchment);
+  font-size: 0.88rem;
+}
+
+.detected-reward-row .locations {
+  color: var(--sky-muted);
+  font-size: 0.78rem;
+}
+
 .boss-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -137,6 +191,14 @@
   .boss-piece-count {
     grid-column: 1 / -1;
     justify-content: flex-end;
+  }
+
+  .detected-reward-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .detected-reward-row .locations {
+    grid-column: 2;
   }
 
   .resource-row {

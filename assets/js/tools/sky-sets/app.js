@@ -364,9 +364,10 @@
     elements.fileLabel.textContent = state.manualOnly
       ? `Manual entry · ${overrideCount.toLocaleString()} piece count${overrideCount === 1 ? '' : 's'} set`
       : `${state.fileName} · ${state.parsed.stats.parsedRows.toLocaleString()} item rows${overrideCount ? ` · ${overrideCount} piece override${overrideCount === 1 ? '' : 's'}` : ''}`;
+    const detectedRewardCount = analysis.evaluatedQuests.filter((quest) => quest.ownedRewards.length > 0).length;
     elements.summaryCards.innerHTML = [
       [analysis.allocation.selected.length, 'Turn-ins you can make together now'],
-      [analysis.ready.length, 'Complete sets before shared-piece allocation'],
+      [detectedRewardCount, 'Detected set rewards owned'],
       [analysis.near.length, 'Tests missing only one or two pieces'],
       [analysis.loosePieces.filter((piece) => !piece.isRune).length, 'Recognized Sky quest pieces found'],
     ].map(([count, label]) => `<div class="summary-card"><strong>${count}</strong><span>${escapeHtml(label)}</span></div>`).join('');
@@ -384,7 +385,7 @@
       elements.workflowMessage.innerHTML = `<strong>${analysis.allocation.selected.length} turn-in${analysis.allocation.selected.length === 1 ? '' : 's'} can be completed now.</strong><span>Use the Turn in now tab. Each listed rune and quest piece is allocated only once.</span>`;
     } else if (analysis.ready.length > 0) {
       elements.workflowMessage.className = 'workflow-message needs-action';
-      elements.workflowMessage.innerHTML = '<strong>Complete sets were found, but all are blocked by an owned LORE reward or current settings.</strong><span>Open All complete sets or the optional class-priority section below.</span>';
+      elements.workflowMessage.innerHTML = '<strong>Complete sets were found, but all are blocked by an owned LORE reward or current settings.</strong><span>Open Detected rewards or the optional class-priority section below.</span>';
     } else {
       elements.workflowMessage.className = 'workflow-message neutral-message';
       elements.workflowMessage.innerHTML = '<strong>No complete turn-in set was found yet.</strong><span>Open Missing 1–2 pieces or By boss to see what to farm next.</span>';
@@ -437,15 +438,57 @@
   }
 
   function renderAllReady() {
-    const ready = sortQuests(state.analysis.ready.filter(matchesFilters));
-    const conflicts = sortQuests(state.analysis.conflicts.filter(matchesFilters));
-    let html = sectionHeader('All individually complete tests', 'Each row has all required pieces before shared-item allocation.', ready.length);
-    html += ready.length ? `<div class="quest-list">${ready.map((quest) => renderQuestCard(quest, { selected: state.analysis.allocation.selectedIds.has(quest.id) })).join('')}</div>` : emptyState('No complete tests match the current filters.');
-    if (conflicts.length) {
-      html += `<div style="height:18px"></div>${sectionHeader('Reward already present', 'The required pieces are present, but at least one reward name was found in the inventory export.', conflicts.length)}`;
-      html += `<div class="quest-list">${conflicts.map((quest) => renderQuestCard(quest, { conflict: true })).join('')}</div>`;
+    const rewarded = sortQuests(
+      state.analysis.evaluatedQuests.filter((quest) => quest.ownedRewards.length > 0 && matchesFilters(quest))
+    );
+    let html = sectionHeader(
+      'Detected set rewards',
+      'Sky set rewards found in your inventory, sorted by class.',
+      rewarded.length
+    );
+    if (!rewarded.length) {
+      elements.results.innerHTML = html + emptyState('No Sky set rewards were detected yet.');
+      return;
     }
+
+    const groups = [];
+    for (const quest of rewarded) {
+      const last = groups[groups.length - 1];
+      if (!last || last.className !== quest.className) {
+        groups.push({ className: quest.className, classAbbr: quest.classAbbr, quests: [quest] });
+      } else {
+        last.quests.push(quest);
+      }
+    }
+
+    html += groups.map((group) => `
+      <section class="reward-class-group">
+        <h3 class="reward-class-title">
+          <span class="class-icon-wrap">${classIconHtml(group.classAbbr, group.className)}</span>
+          <span>${escapeHtml(group.className)}</span>
+          <span class="pill">${group.quests.length}</span>
+        </h3>
+        <div class="detected-reward-list">${group.quests.map((quest) => renderDetectedRewardRow(quest)).join('')}</div>
+      </section>
+    `).join('');
     elements.results.innerHTML = html;
+  }
+
+  function renderDetectedRewardRow(quest) {
+    const rewardIcons = quest.ownedRewards.map((entry) => itemIconHtml(entry.name, 28)).join('');
+    const rewardNames = quest.ownedRewards.map((entry) => escapeHtml(entry.name)).join(' + ');
+    const locations = quest.ownedRewards
+      .map((entry) => escapeHtml(engine.locationText(entry.locations)))
+      .filter(Boolean)
+      .join('; ');
+    return `<div class="detected-reward-row">
+      <span class="detected-reward-icons">${rewardIcons}</span>
+      <span class="detected-reward-main">
+        <strong>${rewardNames}</strong>
+        <span class="class-links">${escapeHtml(quest.test)}</span>
+      </span>
+      <span class="locations">${locations || '—'}</span>
+    </div>`;
   }
 
   function renderNear() {
