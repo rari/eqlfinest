@@ -409,7 +409,7 @@ function showResults(from, to, results) {
   }
 
   const sample = MODES.map((mode) => results[mode]).find(Boolean);
-  resultTitle.textContent = `${sample.start} → ${sample.end}`;
+  resultTitle.textContent = `${sample.start} to ${sample.end}`;
   buildTabs();
   resultPanel.classList.remove("hidden");
   const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches

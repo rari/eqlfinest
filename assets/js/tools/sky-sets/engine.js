@@ -492,7 +492,7 @@
     const ready = evaluatedQuests.filter((quest) => quest.individuallyReady && !quest.rewardConflict);
     const conflicts = evaluatedQuests.filter((quest) => quest.individuallyReady && quest.rewardConflict);
     const near = evaluatedQuests
-      .filter((quest) => !quest.individuallyReady && quest.missing.length <= 2)
+      .filter((quest) => !quest.rewardConflict && !quest.individuallyReady && quest.missing.length <= 2)
       .sort((a, b) => a.missing.length - b.missing.length || a.className.localeCompare(b.className));
 
     const requiredUsage = new Map();

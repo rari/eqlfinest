@@ -17,6 +17,7 @@
     includeConflicts: document.getElementById('includeConflicts'),
     resetPriorities: document.getElementById('resetPriorities'),
     tabBar: document.getElementById('tabBar'),
+    jumpToTabs: document.getElementById('jumpToTabs'),
     classFilter: document.getElementById('classFilter'),
     searchFilter: document.getElementById('searchFilter'),
     results: document.getElementById('results'),
@@ -43,6 +44,8 @@
     parsed: null,
     analysis: null,
     activeTab: 'recommended',
+    overviewFilter: 'all',
+    piecesSort: { key: 'name', dir: 'asc' },
     manualOnly: false,
     classPriority: Object.fromEntries(data.classes.map((item) => [item.name, 'normal'])),
     manualRunes: Object.fromEntries(runeOrder.map((name) => [name, 0])),
@@ -225,7 +228,7 @@
     }
     const url = shareUrlForPlan();
     await navigator.clipboard.writeText(url);
-    setStatus('Share link copied (your page stays on the open inventory).');
+    setStatus('Link copied');
   }
 
   function tryOpenShareHash() {
@@ -295,6 +298,7 @@
   }
 
   function itemIconId(name) {
+    if (/^Wind Rune\s+/i.test(String(name || ''))) return '966';
     return data.itemIcons?.[name] || data.itemIcons?.[displayItemName(name)] || '';
   }
 
@@ -468,7 +472,7 @@
     state.parsed = engine.createEmptyParsed();
     state.analysis = engine.analyzeInventory(effectiveParsed(), data, analysisOptions());
     elements.analysisPanel.classList.remove('hidden');
-    setActiveTab('boss');
+    setActiveTab('overview');
     render();
     elements.resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     setStatus('Enter Wind Rune and piece counts. You can still load an inventory file anytime.');
@@ -484,40 +488,89 @@
 
   function recalculate() {
     if (!state.parsed) return;
+    const overviewFocus = state.activeTab === 'overview' ? captureOverviewInputFocus() : null;
+    const bossFocus = state.activeTab === 'boss' ? captureBossInputFocus() : null;
     state.analysis = engine.analyzeInventory(effectiveParsed(), data, analysisOptions());
     renderRuneTotal();
     renderSummary();
     updateShareButton();
-    if (state.activeTab === 'boss' && elements.results.querySelector('input[data-piece-name]')) {
-      refreshBossRowStates();
-    } else {
-      renderResults();
+    renderResults();
+    if (overviewFocus) restoreOverviewInputFocus(overviewFocus);
+    if (bossFocus) restoreBossInputFocus(bossFocus);
+  }
+
+  function captureOverviewInputFocus() {
+    const el = document.activeElement;
+    if (!el || !elements.results?.contains(el)) return null;
+    if (el.matches?.('input[data-piece-name]')) {
+      return {
+        kind: 'piece',
+        name: el.dataset.pieceName,
+        start: el.selectionStart,
+        end: el.selectionEnd,
+      };
+    }
+    if (el.matches?.('input[data-rune-name]')) {
+      return {
+        kind: 'rune',
+        name: el.dataset.runeName,
+        start: el.selectionStart,
+        end: el.selectionEnd,
+      };
+    }
+    return null;
+  }
+
+  function captureBossInputFocus() {
+    const el = document.activeElement;
+    if (!el || !elements.results?.contains(el) || !el.matches?.('input[data-piece-name]')) return null;
+    return {
+      name: el.dataset.pieceName,
+      start: el.selectionStart,
+      end: el.selectionEnd,
+    };
+  }
+
+  function restoreOverviewInputFocus(focus) {
+    if (!focus?.name) return;
+    const selector = focus.kind === 'rune'
+      ? `input[data-rune-name="${cssAttrEscape(focus.name)}"]`
+      : `input[data-piece-name="${cssAttrEscape(focus.name)}"]`;
+    const input = elements.results.querySelector(selector);
+    if (!input) return;
+    input.focus();
+    if (typeof focus.start === 'number' && typeof focus.end === 'number') {
+      try {
+        input.setSelectionRange(focus.start, focus.end);
+      } catch {
+        /* ignore unsupported selection on number inputs in some browsers */
+      }
     }
   }
 
-  function refreshBossRowStates() {
-    const byId = evaluatedById();
-    elements.results.querySelectorAll('.boss-piece-row').forEach((row) => {
-      const input = row.querySelector('input[data-piece-name]');
-      if (!input) return;
-      const piece = pieceCatalog.find((entry) => entry.name === input.dataset.pieceName);
-      if (!piece) return;
-      const allDone = piece.quests.length > 0 && piece.quests.every((quest) => byId.get(quest.id)?.rewardConflict);
-      const overridden = Object.prototype.hasOwnProperty.call(state.pieceOverrides, piece.name);
-      row.classList.toggle('piece-all-done', allDone);
-      row.classList.toggle('is-overridden', overridden);
-      const links = row.querySelector('.class-links');
-      if (links) {
-        links.innerHTML = allDone
-          ? '<span class="used-by-done">done</span>'
-          : piece.quests.map((quest) => `${escapeHtml(quest.className)} — ${escapeHtml(quest.test)}`).join('<br>');
+  function restoreBossInputFocus(focus) {
+    if (!focus?.name) return;
+    const input = elements.results.querySelector(`input[data-piece-name="${cssAttrEscape(focus.name)}"]`);
+    if (!input) return;
+    input.focus();
+    if (typeof focus.start === 'number' && typeof focus.end === 'number') {
+      try {
+        input.setSelectionRange(focus.start, focus.end);
+      } catch {
+        /* ignore */
       }
-    });
-    const overrideCount = Object.keys(state.pieceOverrides).length;
-    const pill = elements.results.querySelector('.boss-toolbar .pill');
-    if (pill) {
-      pill.textContent = `${overrideCount.toLocaleString()} override${overrideCount === 1 ? '' : 's'}`;
-      pill.classList.toggle('has-counts', overrideCount > 0);
+    }
+  }
+
+  function cssAttrEscape(value) {
+    if (window.CSS?.escape) return window.CSS.escape(value);
+    return String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  }
+
+  function syncTopRuneInput(name, value) {
+    const top = elements.runeInputGrid?.querySelector(`input[data-rune-name="${cssAttrEscape(name)}"]`);
+    if (top && document.activeElement !== top && top.value !== String(value)) {
+      top.value = String(value);
     }
   }
 
@@ -535,12 +588,15 @@
       ? `Manual entry · ${overrideCount.toLocaleString()} piece count${overrideCount === 1 ? '' : 's'} set`
       : `${state.fileName} · ${state.parsed.stats.parsedRows.toLocaleString()} item rows${overrideCount ? ` · ${overrideCount} piece override${overrideCount === 1 ? '' : 's'}` : ''}`;
     const detectedRewardCount = analysis.evaluatedQuests.filter((quest) => quest.ownedRewards.length > 0).length;
+    const totalTests = analysis.evaluatedQuests.length;
+    const completedPct = totalTests > 0 ? Math.round((100 * detectedRewardCount) / totalTests) : 0;
     elements.summaryCards.innerHTML = [
       [analysis.allocation.selected.length, 'Turn-ins you can make together now'],
       [detectedRewardCount, 'Detected set rewards owned'],
       [analysis.near.length, 'Tests missing only one or two pieces'],
       [analysis.loosePieces.filter((piece) => !piece.isRune).length, 'Recognized Sky quest pieces found'],
-    ].map(([count, label]) => `<div class="summary-card"><strong>${count}</strong><span>${escapeHtml(label)}</span></div>`).join('');
+      [`${completedPct}%`, `${detectedRewardCount} of ${totalTests} class tests completed`],
+    ].map(([count, label]) => `<div class="summary-card"><strong>${escapeHtml(String(count))}</strong><span>${escapeHtml(label)}</span></div>`).join('');
 
     const manualRuneTotal = Object.values(state.manualRunes).reduce((sum, count) => sum + count, 0);
     const needsCurrency = manualRuneTotal === 0;
@@ -552,13 +608,13 @@
       elements.workflowMessage.innerHTML = '';
     } else if (analysis.allocation.selected.length > 0) {
       elements.workflowMessage.className = 'workflow-message ready-message';
-      elements.workflowMessage.innerHTML = `<strong>${analysis.allocation.selected.length} turn-in${analysis.allocation.selected.length === 1 ? '' : 's'} can be completed now.</strong><span>Use the Turn in now tab. Each listed rune and quest piece is allocated only once.</span>`;
+      elements.workflowMessage.innerHTML = `<strong>${analysis.allocation.selected.length} turn-in${analysis.allocation.selected.length === 1 ? '' : 's'} can be completed now.</strong><span>Use the Turn In tab. Each listed rune and quest piece is allocated only once.</span>`;
     } else if (analysis.ready.length > 0) {
       elements.workflowMessage.className = 'workflow-message needs-action';
-      elements.workflowMessage.innerHTML = '<strong>Complete sets were found, but all are blocked by an owned LORE reward or current settings.</strong><span>Open Detected rewards or the optional class-priority section below.</span>';
+      elements.workflowMessage.innerHTML = '<strong>Complete sets were found, but all are blocked by an owned LORE reward or current settings.</strong><span>Open Overview (Completed) or the optional class-priority section below.</span>';
     } else {
       elements.workflowMessage.className = 'workflow-message neutral-message';
-      elements.workflowMessage.innerHTML = '<strong>No complete turn-in set was found yet.</strong><span>Open Missing 1–2 pieces or By boss to see what to farm next.</span>';
+      elements.workflowMessage.innerHTML = '<strong>No complete turn-in set was found yet.</strong><span>Open Overview (Missing) or By boss to see what to farm next.</span>';
     }
   }
 
@@ -578,9 +634,7 @@
     if (!state.analysis) return;
     const tab = state.activeTab;
     if (tab === 'recommended') renderRecommended();
-    else if (tab === 'ready') renderAllReady();
-    else if (tab === 'near') renderNear();
-    else if (tab === 'all') renderAllTests();
+    else if (tab === 'overview') renderOverview();
     else if (tab === 'pieces') renderPieces();
     else if (tab === 'boss') renderByBoss();
     else if (tab === 'runes') renderRunes();
@@ -595,86 +649,222 @@
     const selected = sortQuests(state.analysis.allocation.selected.filter(matchesFilters));
     const blocked = sortQuests(state.analysis.allocation.blocked.filter(matchesFilters));
     let html = sectionHeader(
-      'Turn in now',
+      'Turn In',
       'Retrieve the listed items, go to the class NPC in the Island 1 quest room, and hand in one complete card at a time.',
       selected.length
     );
-    html += selected.length ? `<div class="quest-list">${selected.map((quest) => renderQuestCard(quest, { selected: true, open: true })).join('')}</div>` : emptyState(Object.values(state.manualRunes).every((count) => count === 0) ? 'Enter the Wind Rune counts above. The inventory file does not include Inventory > Storage > Currency.' : 'No complete non-conflicting set was found. Open Missing 1–2 pieces to see what is closest.');
+    html += selected.length ? `<div class="quest-list">${selected.map((quest) => renderQuestCard(quest, { selected: true, open: true })).join('')}</div>` : emptyState(Object.values(state.manualRunes).every((count) => count === 0) ? 'Enter the Wind Rune counts above. The inventory file does not include Inventory > Storage > Currency.' : 'No complete non-conflicting set was found. Open Overview (Missing) to see what is closest.');
     if (blocked.length) {
-      html += `<div style="height:18px"></div>${sectionHeader('Other complete sets', 'These compete with the Turn in now batch for one or more runes or quest pieces.', blocked.length)}`;
+      html += `<div style="height:18px"></div>${sectionHeader('Other complete sets', 'These compete with the Turn In batch for one or more runes or quest pieces.', blocked.length)}`;
       html += `<div class="quest-list">${blocked.map((quest) => renderQuestCard(quest, { allocationBlocked: true })).join('')}</div>`;
     }
     elements.results.innerHTML = html;
   }
 
-  function renderAllReady() {
-    const rewarded = sortQuests(
+  function overviewHeader(note, count) {
+    const options = [
+      ['all', 'All'],
+      ['ready', 'Ready'],
+      ['missing', 'Missing'],
+      ['completed', 'Completed'],
+    ];
+    const chips = options.map(([id, label]) => {
+      const active = state.overviewFilter === id;
+      return `<button type="button" class="filter-chip${active ? ' active' : ''}" data-overview-filter="${id}" aria-pressed="${active ? 'true' : 'false'}">${label}</button>`;
+    }).join('');
+    return `<div class="overview-header">
+      <div class="overview-header-text">
+        <h2>Overview</h2>
+        <p>${escapeHtml(note)}</p>
+      </div>
+      <div class="overview-header-controls">
+        <div class="overview-filter-chips" role="group" aria-label="Overview status filter">${chips}</div>
+        <span class="pill">${count}</span>
+      </div>
+    </div>`;
+  }
+
+  function renderOverview() {
+    const filter = state.overviewFilter;
+    const completed = sortQuests(
       state.analysis.evaluatedQuests.filter((quest) => quest.ownedRewards.length > 0 && matchesFilters(quest))
     );
-    let html = sectionHeader(
-      'Detected set rewards',
-      'Sky set rewards found in your inventory, sorted by class.',
-      rewarded.length
+    const missing = sortQuests(state.analysis.near.filter(matchesFilters));
+    const ready = sortQuests(state.analysis.ready.filter(matchesFilters));
+    const groupsByClass = new Map();
+
+    const ensureGroup = (quest) => {
+      let group = groupsByClass.get(quest.className);
+      if (!group) {
+        group = { className: quest.className, classAbbr: quest.classAbbr, ready: [], missing: [], completed: [] };
+        groupsByClass.set(quest.className, group);
+      }
+      return group;
+    };
+
+    if (filter === 'all' || filter === 'completed') {
+      for (const quest of completed) ensureGroup(quest).completed.push(quest);
+    }
+    if (filter === 'all' || filter === 'missing') {
+      for (const quest of missing) ensureGroup(quest).missing.push(quest);
+    }
+    if (filter === 'all' || filter === 'ready') {
+      for (const quest of ready) ensureGroup(quest).ready.push(quest);
+    }
+
+    const groups = [...groupsByClass.values()].sort((a, b) =>
+      (classOrder.get(a.className) ?? 99) - (classOrder.get(b.className) ?? 99)
     );
-    if (!rewarded.length) {
-      elements.results.innerHTML = html + emptyState('No Sky set rewards were detected yet.');
+    const totalCount = groups.reduce(
+      (sum, group) => sum + group.ready.length + group.missing.length + group.completed.length,
+      0
+    );
+    const notes = {
+      all: 'Ready turn-ins, nearly complete tests, and owned rewards, grouped by class.',
+      ready: 'Tests with every required piece owned and no LORE reward conflict, grouped by class.',
+      missing: 'Tests missing one or two required items, grouped by class.',
+      completed: 'Sky set rewards found in your inventory, sorted by class.',
+    };
+    const empties = {
+      all: 'No ready, missing, or completed sets match the current filters.',
+      ready: 'No ready turn-in tests match the current filters.',
+      missing: 'No nearly complete tests match the current filters.',
+      completed: 'No Sky set rewards were detected yet.',
+    };
+
+    let html = overviewHeader(notes[filter] || notes.all, totalCount);
+    if (!totalCount) {
+      elements.results.innerHTML = html + emptyState(empties[filter] || empties.all);
+      bindOverviewFilter();
       return;
     }
 
-    const groups = [];
-    for (const quest of rewarded) {
-      const last = groups[groups.length - 1];
-      if (!last || last.className !== quest.className) {
-        groups.push({ className: quest.className, classAbbr: quest.classAbbr, quests: [quest] });
-      } else {
-        last.quests.push(quest);
-      }
-    }
-
-    html += groups.map((group) => `
-      <section class="reward-class-group">
+    const selectedIds = state.analysis.allocation.selectedIds;
+    const statsByClass = new Map((state.analysis.classStats || []).map((row) => [row.name, row]));
+    html += groups.map((group) => {
+      const stats = statsByClass.get(group.className);
+      const total = stats?.total || 0;
+      const owned = stats?.rewardOwned || 0;
+      const pct = total > 0 ? Math.round((100 * owned) / total) : 0;
+      const missingCount = group.missing.length;
+      const rows = [
+        ...group.ready.map((quest) => renderReadySetRow(quest, selectedIds.has(quest.id))),
+        ...group.missing.map((quest) => renderMissingSetRow(quest)),
+        ...group.completed.map((quest) => renderCompletedSetRow(quest)),
+      ].join('');
+      return `<section class="reward-class-group">
         <h3 class="reward-class-title">
           <span class="class-icon-wrap">${classIconHtml(group.classAbbr, group.className)}</span>
           <span>${escapeHtml(group.className)}</span>
-          <span class="pill">${group.quests.length}</span>
+          <span class="pill class-complete-pct" title="${owned} of ${total} set rewards owned">${pct}% complete</span>
+          ${missingCount ? `<span class="pill class-missing-count">${missingCount} missing</span>` : ''}
         </h3>
-        <div class="detected-reward-list">${group.quests.map((quest) => renderDetectedRewardRow(quest)).join('')}</div>
-      </section>
-    `).join('');
+        <div class="detected-reward-list">${rows}</div>
+      </section>`;
+    }).join('');
     elements.results.innerHTML = html;
+    bindOverviewFilter();
+    bindOverviewMissingInputs();
   }
 
-  function renderDetectedRewardRow(quest) {
+  function bindOverviewFilter() {
+    elements.results.querySelectorAll('button[data-overview-filter]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const next = button.dataset.overviewFilter;
+        if (!next || next === state.overviewFilter) return;
+        state.overviewFilter = next;
+        renderResults();
+      });
+    });
+  }
+
+  function bindOverviewMissingInputs() {
+    elements.results.querySelectorAll('.near-miss-counts input[data-piece-name]').forEach((input) => {
+      input.addEventListener('focus', () => input.select());
+      input.addEventListener('input', () => {
+        const value = setPieceOverride(input.dataset.pieceName, input.value);
+        if (input.value !== String(value)) input.value = String(value);
+        recalculate();
+      });
+    });
+    elements.results.querySelectorAll('.near-miss-counts input[data-rune-name]').forEach((input) => {
+      input.addEventListener('focus', () => input.select());
+      input.addEventListener('input', () => {
+        const value = Math.max(0, Math.min(99, Number.parseInt(input.value || '0', 10) || 0));
+        state.manualRunes[input.dataset.runeName] = value;
+        if (input.value !== String(value)) input.value = String(value);
+        saveStoredRunes();
+        syncTopRuneInput(input.dataset.runeName, value);
+        recalculate();
+      });
+    });
+    if (window.EQLDom?.bindNumFields) window.EQLDom.bindNumFields(elements.results);
+  }
+
+  function renderReadySetRow(quest, inBatch) {
+    const rewardIcons = quest.rewards.map((name) => itemIconHtml(name, 28)).join('');
+    const rewardNames = quest.rewards.map((name) => escapeHtml(name)).join(' + ');
+    const statusText = inBatch ? 'in batch' : 'ready';
+    return `<div class="detected-reward-row ready-set-row">
+      <span class="detected-reward-icons">${rewardIcons}</span>
+      <span class="detected-reward-main">
+        <strong>${rewardNames}</strong>
+        <span class="overview-test">${escapeHtml(quest.test)}</span>
+      </span>
+      <span class="row-status ready-set-status">${statusText}</span>
+    </div>`;
+  }
+
+  function renderCompletedSetRow(quest) {
     const rewardIcons = quest.ownedRewards.map((entry) => itemIconHtml(entry.name, 28)).join('');
     const rewardNames = quest.ownedRewards.map((entry) => escapeHtml(entry.name)).join(' + ');
     const locations = quest.ownedRewards
       .map((entry) => escapeHtml(engine.locationText(entry.locations)))
       .filter(Boolean)
       .join('; ');
-    return `<div class="detected-reward-row">
+    return `<div class="detected-reward-row completed-set-row">
       <span class="detected-reward-icons">${rewardIcons}</span>
       <span class="detected-reward-main">
         <strong>${rewardNames}</strong>
-        <span class="class-links">${escapeHtml(quest.test)}</span>
+        <span class="overview-test test-done">${escapeHtml(quest.test)}</span>
+        <span class="reward-location">${locations || 'Location unknown'}</span>
       </span>
-      <span class="locations">${locations || '—'}</span>
+      <span class="row-status owned-set-status">owned</span>
     </div>`;
   }
 
-  function renderNear() {
-    const quests = sortQuests(state.analysis.near.filter(matchesFilters));
-    elements.results.innerHTML = sectionHeader('Nearly complete tests', 'Missing one or two required items.', quests.length) +
-      (quests.length ? `<div class="quest-list">${quests.map((quest) => renderQuestCard(quest, { near: true })).join('')}</div>` : emptyState('No nearly complete tests match the current filters.'));
-  }
-
-  function renderAllTests() {
-    const quests = sortQuests(state.analysis.evaluatedQuests.filter(matchesFilters));
-    elements.results.innerHTML = sectionHeader('All Plane of Sky tests', 'Current EQL pairings for all 16 classes.', quests.length) +
-      (quests.length ? `<div class="quest-list">${quests.map((quest) => renderQuestCard(quest, {
-        selected: state.analysis.allocation.selectedIds.has(quest.id),
-        conflict: quest.rewardConflict,
-        near: !quest.individuallyReady && quest.missing.length <= 2,
-      })).join('')}</div>` : emptyState('No tests match the current filters.'));
+  function renderMissingSetRow(quest) {
+    const sourceFor = new Map(quest.items.map((item) => [engine.normalizeItemName(item.name), item.source]));
+    const itemLines = quest.missing.map((entry) => {
+      const isRune = /^wind rune /i.test(entry.name);
+      const label = displayItemName(entry.name);
+      const source = isRune ? 'Any Plane of Sky enemy' : (sourceFor.get(entry.key) || '');
+      const count = isRune ? (state.manualRunes[entry.name] || 0) : displayedPieceCount(entry.name);
+      const field = isRune
+        ? numField(
+          `min="0" max="99" step="1" inputmode="numeric" value="${count}" data-rune-name="${escapeHtml(entry.name)}" aria-label="${escapeHtml(label)} count"`,
+          { compact: true }
+        )
+        : numField(
+          `min="0" max="99" step="1" inputmode="numeric" value="${count}" data-piece-name="${escapeHtml(entry.name)}" aria-label="${escapeHtml(label)} count"`,
+          { compact: true }
+        );
+      return `<div class="near-miss-item-block">
+        <div class="near-miss-item">
+          <span class="near-miss-item-label">${itemIconHtml(entry.name, 28)}<strong>${escapeHtml(label)}</strong></span>
+          <span class="near-miss-counts">${field}</span>
+        </div>
+        <div class="near-miss-meta">
+          <span class="overview-test">${escapeHtml(quest.test)}</span>
+          ${source ? `<span class="near-miss-island">${escapeHtml(source)}</span>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+    return `<div class="detected-reward-row near-miss-row">
+      <div class="near-miss-body">
+        <div class="near-miss-items">${itemLines}</div>
+      </div>
+    </div>`;
   }
 
   function renderQuestCard(quest, flags = {}) {
@@ -682,7 +872,7 @@
     const status = quest.rewardConflict
       ? { text: 'reward owned', className: 'conflict' }
       : flags.selected
-        ? { text: 'turn in now', className: 'ready' }
+        ? { text: 'in batch', className: 'ready' }
         : quest.individuallyReady
           ? { text: flags.allocationBlocked ? 'competes' : 'ready', className: 'ready' }
           : { text: `missing ${quest.missing.length}`, className: 'missing' };
@@ -743,27 +933,138 @@
       const haystack = `${piece.name} ${piece.quests.map((quest) => `${quest.className} ${quest.test}`).join(' ')}`.toLocaleLowerCase('en-US');
       return !query || haystack.includes(query);
     });
-    elements.results.innerHTML = sectionHeader('Recognized Plane of Sky quest pieces', 'Copies, locations, and every current test that consumes the item.', pieces.length) +
-      (pieces.length ? renderPiecesTable(pieces) : emptyState('No recognized quest pieces match the current filters.'));
+    const sorted = sortPieces(pieces);
+    elements.results.innerHTML = sectionHeader('Recognized Plane of Sky quest pieces', 'Copies, locations, and every current test that consumes the item.', sorted.length) +
+      (sorted.length ? renderPiecesTable(sorted) : emptyState('No recognized quest pieces match the current filters.'));
+    bindPiecesSort();
+  }
+
+  function questLineHtml(quest, { done = false } = {}) {
+    const text = `${escapeHtml(quest.className)} — ${escapeHtml(quest.test)}`;
+    return done
+      ? `<span class="test-done">${text}</span>`
+      : text;
+  }
+
+  function pieceQuestLinesHtml(piece, byId) {
+    return piece.quests.map((quest) => {
+      const done = Boolean(byId.get(quest.id)?.rewardConflict);
+      return questLineHtml(quest, { done });
+    }).join('<br>');
+  }
+
+  function pieceStillNeeded(piece, byId) {
+    const incompleteConsumers = piece.quests.filter((quest) => !byId.get(quest.id)?.rewardConflict).length;
+    return Math.max(0, incompleteConsumers - (piece.count || 0));
+  }
+
+  function pieceIncompleteDemand(piece, byId) {
+    return piece.quests.filter((quest) => !byId.get(quest.id)?.rewardConflict).length;
+  }
+
+  function bossGroupProgress(rows, byId) {
+    let needed = 0;
+    let have = 0;
+    for (const piece of rows) {
+      const demand = pieceIncompleteDemand(piece, byId);
+      if (demand < 1) continue;
+      const owned = displayedPieceCount(piece.name);
+      needed += demand;
+      have += Math.min(owned, demand);
+    }
+    const missing = Math.max(0, needed - have);
+    const pct = needed > 0 ? Math.round((100 * have) / needed) : 100;
+    return { needed, have, missing, pct };
+  }
+
+  function pieceUsedBySortKey(piece, byId) {
+    const allDone = piece.quests.length > 0 && piece.quests.every((quest) => byId.get(quest.id)?.rewardConflict);
+    if (allDone) return 'done';
+    if (!piece.quests.length) return '';
+    const first = piece.quests[0];
+    return `${first.className} — ${first.test}`;
+  }
+
+  function sortPieces(pieces) {
+    const byId = evaluatedById();
+    const { key, dir } = state.piecesSort;
+    const factor = dir === 'desc' ? -1 : 1;
+    return [...pieces].sort((a, b) => {
+      let cmp = 0;
+      if (key === 'count' || key === 'selectedUse') {
+        cmp = (a[key] || 0) - (b[key] || 0);
+      } else if (key === 'stillNeeded') {
+        cmp = pieceStillNeeded(a, byId) - pieceStillNeeded(b, byId);
+      } else if (key === 'locations') {
+        cmp = engine.locationText(a.locations).localeCompare(engine.locationText(b.locations));
+      } else if (key === 'usedBy') {
+        const aDone = pieceUsedBySortKey(a, byId) === 'done';
+        const bDone = pieceUsedBySortKey(b, byId) === 'done';
+        if (aDone !== bDone) return aDone ? -1 : 1;
+        cmp = pieceUsedBySortKey(a, byId).localeCompare(pieceUsedBySortKey(b, byId));
+      } else {
+        cmp = a.name.localeCompare(b.name);
+      }
+      if (cmp !== 0) return cmp * factor;
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  function sortHeader(label, key, extraClass = '') {
+    const active = state.piecesSort.key === key;
+    const aria = active ? (state.piecesSort.dir === 'asc' ? 'ascending' : 'descending') : 'none';
+    const arrow = active ? (state.piecesSort.dir === 'asc' ? ' ▲' : ' ▼') : '';
+    return `<th class="${extraClass} sortable-th${active ? ' is-sorted' : ''}" data-sort-key="${key}" aria-sort="${aria}" role="columnheader" tabindex="0">${escapeHtml(label)}${arrow}</th>`;
   }
 
   function renderPiecesTable(pieces) {
     const byId = evaluatedById();
-    return `<div class="table-wrap"><table class="data-table"><thead><tr><th class="icon-col"></th><th>Item</th><th class="count">Owned</th><th class="count">Used in batch</th><th>Locations</th><th>Used by</th></tr></thead><tbody>${pieces.map((piece) => {
+    return `<div class="table-wrap"><table class="data-table"><thead><tr>
+      <th class="icon-col"></th>
+      ${sortHeader('Item', 'name')}
+      ${sortHeader('Owned', 'count', 'count')}
+      ${sortHeader('Still needed', 'stillNeeded', 'count')}
+      ${sortHeader('Used in batch', 'selectedUse', 'count')}
+      ${sortHeader('Locations', 'locations')}
+      ${sortHeader('Used by', 'usedBy')}
+    </tr></thead><tbody>${pieces.map((piece) => {
       const allDone = piece.quests.length > 0 && piece.quests.every((quest) => byId.get(quest.id)?.rewardConflict);
+      const stillNeeded = pieceStillNeeded(piece, byId);
       const usedBy = allDone
         ? '<span class="used-by-done">done</span>'
-        : piece.quests.map((quest) => `${escapeHtml(quest.className)} — ${escapeHtml(quest.test)}`).join('<br>');
+        : pieceQuestLinesHtml(piece, byId);
       return `
       <tr${allDone ? ' class="piece-all-done"' : ''}>
         <td class="icon-col">${itemIconHtml(piece.name, 28)}</td>
         <td><strong>${escapeHtml(piece.name)}</strong></td>
         <td class="count">${piece.count}</td>
+        <td class="count">${stillNeeded}</td>
         <td class="count">${piece.selectedUse}</td>
         <td>${escapeHtml(engine.locationText(piece.locations))}</td>
         <td class="class-links">${usedBy}</td>
       </tr>`;
     }).join('')}</tbody></table></div>`;
+  }
+
+  function bindPiecesSort() {
+    elements.results.querySelectorAll('th[data-sort-key]').forEach((th) => {
+      const activate = () => {
+        const key = th.dataset.sortKey;
+        if (state.piecesSort.key === key) {
+          state.piecesSort.dir = state.piecesSort.dir === 'asc' ? 'desc' : 'asc';
+        } else {
+          state.piecesSort = { key, dir: 'asc' };
+        }
+        renderResults();
+      };
+      th.addEventListener('click', activate);
+      th.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          activate();
+        }
+      });
+    });
   }
 
   function renderByBoss() {
@@ -805,30 +1106,47 @@
 
     html += orderedSources.map((source) => {
       const rows = groups.get(source);
+      const progress = bossGroupProgress(rows, byId);
       return `<section class="boss-group">
-        <h3 class="boss-group-title">${escapeHtml(source)} <span class="pill">${rows.length}</span></h3>
-        <div class="boss-piece-list">${rows.map((piece) => {
+        <h3 class="boss-group-title">
+          <span class="boss-group-name">${escapeHtml(source)}</span>
+          <span class="pill class-complete-pct" title="${progress.have} of ${progress.needed || rows.length} copies for unfinished tests">${progress.pct}% complete</span>
+          ${progress.missing ? `<span class="pill class-missing-count">${progress.missing} missing</span>` : ''}
+        </h3>
+        <div class="boss-piece-list">${[...rows].sort((a, b) => {
+          const aDone = a.quests.length > 0 && a.quests.every((quest) => byId.get(quest.id)?.rewardConflict);
+          const bDone = b.quests.length > 0 && b.quests.every((quest) => byId.get(quest.id)?.rewardConflict);
+          if (aDone !== bDone) return aDone ? 1 : -1;
+          return a.name.localeCompare(b.name);
+        }).map((piece) => {
           const allDone = piece.quests.length > 0 && piece.quests.every((quest) => byId.get(quest.id)?.rewardConflict);
           const count = displayedPieceCount(piece.name);
+          const demand = pieceIncompleteDemand(piece, byId);
+          const short = Math.max(0, demand - count);
           const fromFile = fileOwnedCount(piece.name);
           const overridden = Object.prototype.hasOwnProperty.call(state.pieceOverrides, piece.name);
-          const usedBy = allDone
-            ? '<span class="used-by-done">done</span>'
-            : piece.quests.map((quest) => `${escapeHtml(quest.className)} — ${escapeHtml(quest.test)}`).join('<br>');
-          const fileHint = !state.manualOnly && fromFile > 0
+          const usedBy = pieceQuestLinesHtml(piece, byId);
+          const fileHint = !allDone && !state.manualOnly && fromFile > 0
             ? `<span class="boss-file-hint">export ${fromFile}</span>`
             : '';
-          return `<label class="boss-piece-row${allDone ? ' piece-all-done' : ''}${overridden ? ' is-overridden' : ''}">
+          const needHint = !allDone && demand > 0
+            ? `<span class="boss-copy-need${short > 0 ? ' is-short' : ''}" title="${count} owned of ${demand} needed for unfinished tests">${count}/${demand}</span>`
+            : '';
+          const countControl = allDone
+            ? '<span class="boss-piece-done">done</span>'
+            : numField(`min="0" max="99" step="1" inputmode="numeric" value="${count}" data-piece-name="${escapeHtml(piece.name)}" aria-label="${escapeHtml(piece.name)} count"`, { compact: true });
+          return `<${allDone ? 'div' : 'label'} class="boss-piece-row${allDone ? ' piece-all-done' : ''}${overridden ? ' is-overridden' : ''}${short > 0 ? ' is-short' : ''}">
             ${itemIconHtml(piece.name, 32)}
             <span class="boss-piece-main">
               <strong>${escapeHtml(piece.name)}</strong>
               <span class="class-links">${usedBy}</span>
             </span>
             <span class="boss-piece-count">
+              ${needHint}
               ${fileHint}
-              ${numField(`min="0" max="99" step="1" inputmode="numeric" value="${count}" data-piece-name="${escapeHtml(piece.name)}" aria-label="${escapeHtml(piece.name)} count"`, { compact: true })}
+              ${countControl}
             </span>
-          </label>`;
+          </${allDone ? 'div' : 'label'}>`;
         }).join('')}</div>
       </section>`;
     }).join('');
@@ -868,8 +1186,8 @@
       return display.includes(query) || row.name.toLocaleLowerCase('en-US').includes(query);
     });
     elements.results.innerHTML = sectionHeader('Wind Rune inventory', 'Totals come from the currency boxes above. A 0 means that rune is not available for turn-ins.', rows.length) +
-      `<div class="table-wrap"><table class="data-table"><thead><tr><th class="icon-col"></th><th>Rune</th><th class="count">Owned</th><th class="count">Selected use</th><th>Locations</th><th class="count">Tests using rune</th></tr></thead><tbody>${rows.map((row) => `
-        <tr><td class="icon-col">${itemIconHtml(row.name, 28)}</td><td><strong>${escapeHtml(displayRuneName(row.name))}</strong></td><td class="count">${row.count}</td><td class="count">${row.selectedUse}</td><td>${row.count ? escapeHtml(engine.locationText(row.locations)) : '—'}</td><td class="count">${row.usageCount}</td></tr>
+      `<div class="table-wrap"><table class="data-table"><thead><tr><th class="icon-col"></th><th>Rune</th><th class="count">Owned</th><th class="count">Selected use</th><th class="count">Tests using rune</th></tr></thead><tbody>${rows.map((row) => `
+        <tr><td class="icon-col">${itemIconHtml(row.name, 28)}</td><td><strong>${escapeHtml(displayRuneName(row.name))}</strong></td><td class="count">${row.count}</td><td class="count">${row.selectedUse}</td><td class="count">${row.usageCount}</td></tr>
       `).join('')}</tbody></table></div>`;
   }
 
@@ -909,6 +1227,13 @@
   }
 
   function setActiveTab(tabName) {
+    if (tabName === 'sets' || tabName === 'all' || tabName === 'ready' || tabName === 'near') {
+      if (tabName === 'near') state.overviewFilter = 'missing';
+      else if (tabName === 'ready') state.overviewFilter = 'ready';
+      else if (tabName === 'sets') state.overviewFilter = state.overviewFilter || 'all';
+      else state.overviewFilter = 'all';
+      tabName = 'overview';
+    }
     state.activeTab = tabName;
     elements.tabBar.querySelectorAll('.tab').forEach((button) => button.classList.toggle('active', button.dataset.tab === tabName));
     renderResults();
@@ -957,6 +1282,41 @@
     const button = event.target.closest('button[data-tab]');
     if (button) setActiveTab(button.dataset.tab);
   });
+
+  function updateJumpToTabs() {
+    const button = elements.jumpToTabs;
+    const tabs = elements.tabBar;
+    if (!button || !tabs) return;
+    const analysisOpen = elements.analysisPanel && !elements.analysisPanel.classList.contains('hidden');
+    if (!analysisOpen) {
+      button.hidden = true;
+      return;
+    }
+    const tabsBottom = tabs.getBoundingClientRect().bottom;
+    button.hidden = tabsBottom > 72;
+  }
+
+  if (elements.jumpToTabs) {
+    elements.jumpToTabs.addEventListener('click', () => {
+      if (window.EQLToast?.scrollTo) {
+        window.EQLToast.scrollTo(elements.tabBar);
+      } else {
+        elements.tabBar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+    window.addEventListener('scroll', updateJumpToTabs, { passive: true });
+    window.addEventListener('resize', updateJumpToTabs);
+  }
+
+  const _showAnalysis = () => {
+    updateJumpToTabs();
+  };
+  const analysisObserver = elements.analysisPanel
+    ? new MutationObserver(_showAnalysis)
+    : null;
+  if (analysisObserver) {
+    analysisObserver.observe(elements.analysisPanel, { attributes: true, attributeFilter: ['class'] });
+  }
   elements.exportButton.addEventListener('click', exportReport);
   elements.printButton.addEventListener('click', () => {
     setActiveTab('recommended');
@@ -989,5 +1349,6 @@
   loadStoredRunes();
   initializeControls();
   updateShareButton();
+  updateJumpToTabs();
   tryOpenShareHash();
 })();
